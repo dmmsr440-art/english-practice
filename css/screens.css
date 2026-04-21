@@ -1,0 +1,321 @@
+/* ========== ログイン画面 ========== */
+.login-container {
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.login-brand {
+    margin-bottom: 48px;
+}
+
+.login-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.login-brand h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.login-subtitle {
+    color: var(--text-2);
+    font-size: 14px;
+}
+
+.login-note {
+    margin-top: 24px;
+    color: var(--text-3);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* ========== Why展開 ========== */
+.why-section {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FED7AA 100%);
+    border-radius: var(--radius-lg);
+    padding: 4px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+}
+
+.why-toggle-btn {
+    width: 100%;
+    background: white;
+    border-radius: calc(var(--radius-lg) - 4px);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    transition: background 0.2s;
+}
+
+.why-toggle-btn:hover {
+    background: #FFFBEB;
+}
+
+.why-icon {
+    font-size: 22px;
+}
+
+.why-label {
+    flex: 1;
+    text-align: left;
+}
+
+.why-arrow {
+    font-size: 14px;
+    color: var(--text-2);
+    transition: transform 0.3s;
+}
+
+.why-arrow.open {
+    transform: rotate(180deg);
+}
+
+.why-content {
+    padding: 20px;
+    padding-top: 8px;
+    animation: why-expand 0.3s ease-out;
+}
+
+.why-text {
+    background: white;
+    padding: 20px;
+    border-radius: var(--radius);
+    white-space: pre-wrap;
+    line-height: 1.8;
+    font-size: 15px;
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+}
+
+.why-text:empty::before {
+    content: "Why Statement が未設定です。設定画面から入力してください。";
+    color: var(--text-3);
+    font-style: italic;
+}
+
+@keyframes why-expand {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== 日次チェック ========== */
+.daily-check-section {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+
+.daily-date {
+    font-size: 12px;
+    color: var(--text-3);
+    margin-bottom: 12px;
+}
+
+.check-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: none;
+}
+
+.check-item:hover {
+    background: var(--bg);
+}
+
+.check-item.checked {
+    background: #F0FDF4;
+}
+
+.check-box {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-dark);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.check-item.checked .check-box {
+    background: var(--success);
+    border-color: var(--success);
+}
+
+.check-box::after {
+    content: "";
+    width: 12px;
+    height: 6px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(-45deg) scale(0);
+    margin-top: -2px;
+    transition: transform 0.2s;
+}
+
+.check-item.checked .check-box::after {
+    transform: rotate(-45deg) scale(1);
+}
+
+.check-label {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.check-item.checked .check-label {
+    color: var(--text-2);
+}
+
+/* ========== モジュールグリッド ========== */
+.modules-section {
+    margin-bottom: 20px;
+}
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.module-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+    min-height: 100px;
+}
+
+.module-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    border-color: var(--primary);
+}
+
+.module-card:active {
+    transform: translateY(0);
+}
+
+.module-card-wide {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    padding: 16px;
+    min-height: 64px;
+}
+
+.module-icon {
+    font-size: 28px;
+}
+
+.module-card-wide .module-icon {
+    font-size: 24px;
+}
+
+.module-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.phase-notice {
+    font-size: 12px;
+    color: var(--text-3);
+    text-align: center;
+    padding: 12px;
+    background: var(--bg);
+    border-radius: var(--radius);
+}
+
+/* ========== 設定画面 ========== */
+.settings-section {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+
+.settings-section-subtle {
+    background: var(--bg);
+    box-shadow: none;
+}
+
+.settings-hint {
+    font-size: 13px;
+    color: var(--text-2);
+    margin-bottom: 12px;
+}
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px;
+}
+
+.settings-label {
+    color: var(--text-2);
+}
+
+.settings-value {
+    color: var(--text);
+    font-weight: 500;
+}
+
+.settings-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius);
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    background: white;
+    color: var(--text);
+    margin-bottom: 12px;
+    min-height: 120px;
+    transition: border-color 0.2s;
+}
+
+.settings-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}

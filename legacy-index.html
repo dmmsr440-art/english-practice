@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>英語練習</title>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --primary-light: #EFF6FF;
+            --bg: #F1F5F9;
+            --card: #FFFFFF;
+            --text: #0F172A;
+            --text-2: #64748B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            --shadow: 0 2px 16px rgba(0,0,0,0.07);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── SCREEN SYSTEM ── */
+        .screen { display: none; min-height: 100vh; flex-direction: column; }
+        .screen.active { display: flex; }
+
+        /* ── HEADER ── */
+        .header {
+            background: white;
+            padding: 12px 16px;
+            padding-top: calc(12px + var(--safe-top));
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 1px 0 var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-title { font-size: 17px; font-weight: 700; flex: 1; }
+        .back-btn {
+            background: var(--primary-light);
+            border: none;
+            color: var(--primary);
+            font-size: 20px;
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .header-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 7px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ── HOME ── */
+        .home-hero {
+            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+            color: white;
+            padding: calc(36px + var(--safe-top)) 24px 32px;
+            text-align: center;
+        }
+        .home-hero h1 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+        .home-hero p { font-size: 14px; opacity: 0.8; }
+
+        .stats-row {
+            display: flex;
+            gap: 1px;
+            background: var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .stat-card {
+            flex: 1;
+            text-align: center;
+            padding: 14px 8px;
+            background: white;
+        }
+        .stat-number { font-size: 26px; font-weight: 800; color: var(--primary); }
+        .stat-label { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+
+        .menu-section { padding: 20px 16px; display: flex; flex-direction: column; gap: 12px; }
+        .section-title { font-size: 12px; font-weight: 700; color: var(--text-2); letter-spacing: 0.05em; margin-bottom: 4px; }
+
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .menu-card {
+            background: white;
+            border-radius: 18px;
+            padding: 22px 16px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.12s;
+            border: none;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+        .menu-card:active { transform: scale(0.95); }
+        .menu-card .icon { font-size: 34px; }
+        .menu-card .m-title { font-size: 15px; font-weight: 700; }
+        .menu-card .m-desc { font-size: 11px; color: var(--text-2); line-height: 1.4; }
+
+        .menu-card-wide {
+            background: white;
+            border-radius: 18px;
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.12s;
+            border: none;
+            display: flex; align-items: center; gap: 16px;
+        }
+        .menu-card-wide:active { transform: scale(0.97); }
+        .menu-card-wide .icon { font-size: 30px; }
+        .menu-card-wide .text { flex: 1; text-align: left; }
+        .menu-card-wide .m-title { font-size: 15px; font-weight: 700; }
+        .menu-card-wide .m-desc { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+        .menu-card-wide .arrow { font-size: 18px; color: var(--text-2); }
+
+        /* ── PROGRESS BAR ── */
+        .progress-wrap { padding: 12px 16px 0; }
+        .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.4s; }
+
+        /* ── PRACTICE LAYOUT ── */
+        .practice-body { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
+
+        .phrase-card {
+            background: white;
+            border-radius: 22px;
+            padding: 24px 20px;
+            box-shadow: var(--shadow);
+            display: flex; flex-direction: column; gap: 14px;
+            flex: 1;
+        }
+        .phrase-num { font-size: 12px; color: var(--text-2); font-weight: 600; text-align: right; }
+        .japanese-text { font-size: 19px; font-weight: 700; line-height: 1.55; color: var(--text); }
+        .english-box {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            line-height: 1.65;
+            color: #1E3A5F;
+        }
+        .hint-text { font-size: 13px; color: var(--text-2); text-align: center; }
+        .spacer { flex: 1; }
+
+        /* ── PLAY BUTTON ── */
+        .big-circle-btn {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.12s, box-shadow 0.12s;
+            margin: 0 auto;
+        }
+        .big-circle-btn:active { transform: scale(0.9); }
+        .play-btn-style {
+            background: var(--primary);
+            box-shadow: 0 6px 24px rgba(59,130,246,0.45);
+        }
+        .play-btn-style.playing {
+            background: var(--warning);
+            box-shadow: 0 6px 24px rgba(245,158,11,0.45);
+        }
+        .rec-btn-style {
+            background: var(--error);
+            box-shadow: 0 6px 24px rgba(239,68,68,0.40);
+        }
+        .rec-btn-style.recording { animation: pulse 1.1s ease-in-out infinite; }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(0.92); } }
+
+        .center-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .status-text { font-size: 13px; color: var(--text-2); text-align: center; min-height: 20px; }
+
+        /* ── BUTTONS ── */
+        .btn {
+            padding: 14px 20px;
+            border-radius: 14px;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.1s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: #F1F5F9; color: var(--text); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--error); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-row { display: flex; gap: 10px; }
+        .btn-row .btn { flex: 1; }
+
+        /* ── NAV ARROWS ── */
+        .nav-arrows { display: flex; gap: 14px; justify-content: center; align-items: center; }
+        .nav-arrow {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.12s;
+            color: var(--text);
+        }
+        .nav-arrow:active { background: var(--primary); border-color: var(--primary); color: white; }
+
+        /* ── SCORE ── */
+        .score-box { border-radius: 16px; padding: 16px 20px; text-align: center; }
+        .score-box.s-great { background: #D1FAE5; color: #065F46; }
+        .score-box.s-good { background: #FEF3C7; color: #92400E; }
+        .score-box.s-try { background: #FEE2E2; color: #991B1B; }
+        .score-num { font-size: 38px; font-weight: 900; }
+        .score-msg { font-size: 14px; margin-top: 4px; font-weight: 600; }
+
+        .result-section { display: flex; flex-direction: column; gap: 10px; }
+        .result-label { font-size: 11px; font-weight: 700; color: var(--text-2); letter-spacing: 0.04em; margin-bottom: 2px; }
+        .transcript-box {
+            background: #F8FAFC;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 15px;
+            min-height: 52px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        /* ── PHRASES LIST ── */
+        .search-wrap { padding: 12px 16px; background: white; border-bottom: 1px solid var(--border); }
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            background: var(--bg);
+            outline: none;
+            font-family: inherit;
+        }
+        .search-input:focus { border-color: var(--primary); }
+
+        .phrases-list { flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+
+        .phrase-item {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.1s;
+            border-left: 4px solid var(--primary);
+        }
+        .phrase-item:active { transform: scale(0.98); }
+        .pi-jp { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+        .pi-en { font-size: 13px; color: #1E3A5F; margin-bottom: 6px; line-height: 1.45; }
+        .pi-meta { font-size: 11px; color: var(--text-2); display: flex; gap: 12px; flex-wrap: wrap; }
+
+        /* ── ADD FORM ── */
+        .form-body { padding: 16px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-label { font-size: 13px; font-weight: 700; color: var(--text-2); }
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 13px;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            background: white;
+            transition: border-color 0.15s;
+        }
+        .form-input:focus, .form-textarea:focus { border-color: var(--primary); }
+        .form-textarea { resize: vertical; min-height: 72px; }
+        .form-required { color: var(--error); }
+
+        /* ── SETTINGS ── */
+        .settings-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .settings-card { background: white; border-radius: 16px; padding: 18px; }
+        .settings-card label { display: block; font-size: 13px; font-weight: 700; color: var(--text-2); margin-bottom: 10px; }
+        .settings-card input[type="password"],
+        .settings-card input[type="text"] {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 11px;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+        }
+        .settings-card input[type="password"]:focus,
+        .settings-card input[type="text"]:focus { border-color: var(--primary); }
+        .settings-card input[type="range"] { width: 100%; accent-color: var(--primary); }
+        .settings-note { font-size: 12px; color: var(--text-2); margin-top: 8px; line-height: 1.5; }
+
+        /* ── MODAL ── */
+        .overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(15,23,42,0.5);
+            z-index: 200;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .overlay.active { display: flex; }
+        .modal {
+            background: white;
+            width: 100%;
+            max-height: 88vh;
+            border-radius: 26px 26px 0 0;
+            padding: 24px 20px;
+            padding-bottom: calc(24px + var(--safe-bottom));
+            overflow-y: auto;
+        }
+        .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 22px; }
+        .modal-jp { font-size: 21px; font-weight: 800; line-height: 1.4; margin-bottom: 14px; }
+        .modal-en { font-size: 16px; line-height: 1.65; color: #1E3A5F; background: var(--primary-light); padding: 14px 16px; border-radius: 12px; border-left: 4px solid var(--primary); margin-bottom: 14px; }
+        .modal-meta { font-size: 12px; color: var(--text-2); margin-bottom: 10px; }
+        .modal-memo { font-size: 13px; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 11px; padding: 12px 14px; line-height: 1.55; }
+        .modal-play-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 13px;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed;
+            bottom: calc(90px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(16px);
+            background: #0F172A;
+            color: white;
+            padding: 11px 22px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.28s;
+            z-index: 300;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ── EMPTY STATE ── */
+        .empty-state { text-align: center; padding: 60px 24px; color: var(--text-2); }
+        .empty-state .icon { font-size: 52px; margin-bottom: 14px; }
+        .empty-state p { font-size: 15px; }
+
+        /* ── RULES PANEL ── */
+        .rules-panel {
+            margin: 14px 16px 16px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .rules-header {
+            width: 100%;
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            color: #78350F;
+            padding: 13px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .rules-header .r-arrow { font-size: 12px; transition: transform 0.2s; }
+        .rules-header.open .r-arrow { transform: rotate(180deg); }
+        .rules-body { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+        .rule-item {
+            background: #FFFBEB;
+            border-left: 3px solid #F59E0B;
+            border-radius: 8px;
+            padding: 9px 11px;
+        }
+        .rule-name { font-size: 13px; font-weight: 700; color: #78350F; margin-bottom: 3px; }
+        .rule-desc { font-size: 12px; color: #422006; line-height: 1.55; }
+        .rule-ex { font-size: 11.5px; color: #92400E; margin-top: 4px; }
+
+        /* ── MODE TOGGLE (日本語/イラスト) ── */
+        .mode-toggle {
+            display: flex;
+            gap: 6px;
+            margin: 0 16px 10px;
+            background: #E5E7EB;
+            padding: 4px;
+            border-radius: 12px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 9px 10px;
+            background: transparent;
+            border: none;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-2);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mode-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* ── ILLUSTRATION SCENE ── */
+        .illust-scene {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            max-height: 260px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 14px 0 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+        .illust-main-emoji {
+            font-size: 92px;
+            line-height: 1;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+            z-index: 2;
+        }
+        .illust-decor-item {
+            position: absolute;
+            font-size: 44px;
+            opacity: 0.85;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        .illust-decor-item.d1 { top: 12%; left: 10%; }
+        .illust-decor-item.d2 { bottom: 14%; right: 12%; }
+        .illust-caption {
+            font-size: 12px;
+            color: var(--text-2);
+            text-align: center;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* ── STAR BUTTON ── */
+        .phrase-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            padding: 4px 8px;
+            line-height: 1;
+            color: #D1D5DB;
+            transition: transform 0.15s;
+        }
+        .star-btn.active { color: #F59E0B; }
+        .star-btn:active { transform: scale(0.85); }
+
+        /* ── FOCUS MODE BANNER ── */
+        .focus-banner {
+            background: linear-gradient(135deg, #FEF3C7, #FBBF24);
+            color: #78350F;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* ── UTILITY ── */
+        .hidden { display: none !important; }
+        .divider { height: 1px; background: var(--border); margin: 4px 0; }
+    </style>
+</head>
+<body>
+
+<!-- ========== HOME ========== -->
+<div id="screen-home" class="screen active">
+    <div class="home-hero">
+        <h1>🇺🇸 英語練習</h1>
+        <p>瞬間英作文でネイティブ英語への近道</p>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-number" id="stat-total">0</div>
+            <div class="stat-label">フレーズ数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="stat-today">0</div>
+            <div class="stat-label">今日の練習</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="stat-all">0</div>
+            <div class="stat-label">累計練習</div>
+        </div>
+    </div>
+
+    <div class="menu-section">
+        <div class="section-title">練習モード</div>
+        <button class="menu-card-wide" onclick="showScreen('screen-listen'); initListen(false)" style="background: linear-gradient(135deg, #3B82F6, #2563EB); color: white;">
+            <span class="icon">✍️</span>
+            <div class="text">
+                <div class="m-title" style="color:white;">瞬間英作文</div>
+                <div class="m-desc" style="color:rgba(255,255,255,0.8);">日本語 or イラストから瞬時に英語へ</div>
+            </div>
+            <span class="arrow" style="color:rgba(255,255,255,0.7);">›</span>
+        </button>
+
+        <button class="menu-card-wide" onclick="startFocusMode()" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white;">
+            <span class="icon">⭐</span>
+            <div class="text">
+                <div class="m-title" style="color:white;">集中練習</div>
+                <div class="m-desc" id="focus-count-desc" style="color:rgba(255,255,255,0.85);">登録したフレーズだけを反復</div>
+            </div>
+            <span class="arrow" style="color:rgba(255,255,255,0.7);">›</span>
+        </button>
+
+        <div class="divider"></div>
+        <div class="section-title" style="margin-top:4px;">管理</div>
+
+        <button class="menu-card-wide" onclick="showScreen('screen-phrases')">
+            <span class="icon">📚</span>
+            <div class="text">
+                <div class="m-title">フレーズ一覧</div>
+                <div class="m-desc">全フレーズの確認・追加・削除</div>
+            </div>
+            <span class="arrow">›</span>
+        </button>
+
+        <button class="menu-card-wide" onclick="showScreen('screen-settings')">
+            <span class="icon">⚙️</span>
+            <div class="text">
+                <div class="m-title">設定</div>
+                <div class="m-desc">APIキー・読み上げ速度</div>
+            </div>
+            <span class="arrow">›</span>
+        </button>
+    </div>
+</div>
+
+<!-- ========== 瞬間英作文 ========== -->
+<div id="screen-listen" class="screen">
+    <div class="header">
+        <button class="back-btn" onclick="goHome()">‹</button>
+        <span class="header-title" id="l-header-title">✍️ 瞬間英作文</span>
+        <button class="header-action" onclick="shuffleListen()">🔀</button>
+    </div>
+
+    <div id="l-focus-banner" class="focus-banner hidden">⭐ 集中練習モード — 登録したフレーズのみ表示中</div>
+
+    <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="l-progress"></div></div>
+    </div>
+
+    <div class="mode-toggle">
+        <button class="mode-btn active" id="mode-btn-jp" onclick="setMode('japanese')">🇯🇵 日本語</button>
+        <button class="mode-btn" id="mode-btn-il" onclick="setMode('illustration')">🎨 イラスト</button>
+    </div>
+
+    <div class="practice-body">
+        <div class="phrase-card">
+            <div class="phrase-top-row">
+                <div class="phrase-num" id="l-num">1 / 34</div>
+                <button class="star-btn" id="l-star-btn" onclick="toggleStar()" title="集中練習に登録">☆</button>
+            </div>
+            <div class="hint-text" id="l-hint-text">日本語を見て、英語で言えるか試してから答えを見よう</div>
+            <div class="japanese-text" id="l-japanese"></div>
+            <div id="l-illust-wrap" class="hidden">
+                <div class="illust-scene" id="l-illust-scene">
+                    <div class="illust-decor-item d1" id="l-illust-d1"></div>
+                    <div class="illust-main-emoji" id="l-illust-main"></div>
+                    <div class="illust-decor-item d2" id="l-illust-d2"></div>
+                </div>
+                <div class="illust-caption">イメージを直接英語に 🧠→🗣️</div>
+            </div>
+            <div id="l-english-wrap" class="hidden">
+                <div class="english-box" id="l-english"></div>
+                <div id="l-pronunciation-wrap" class="hidden" style="margin-top:10px; background:#F0FDF4; border-left:4px solid #10B981; border-radius:12px; padding:12px 14px;">
+                    <div style="font-size:11px; font-weight:700; color:#065F46; margin-bottom:6px;">🎯 発音のポイント</div>
+                    <div id="l-pronunciation" style="font-size:13px; color:#065F46; line-height:1.7;"></div>
+                </div>
+            </div>
+            <div class="spacer"></div>
+        </div>
+
+        <div class="center-col">
+            <button class="big-circle-btn play-btn-style" id="l-play-btn" onclick="playListen()">▶</button>
+            <p class="status-text" id="l-play-status">タップして再生</p>
+        </div>
+
+        <button class="btn btn-secondary" id="l-answer-btn" onclick="toggleListenAnswer()">答えを見る</button>
+
+        <div class="nav-arrows">
+            <button class="nav-arrow" onclick="listenNav(-1)">‹</button>
+            <button class="nav-arrow" onclick="listenNav(1)">›</button>
+        </div>
+
+        <!-- 発音ルール一覧（いつでも確認） -->
+        <div class="rules-panel">
+            <button class="rules-header" id="rules-header-btn" onclick="toggleRules()">
+                <span>📖 7つの発音ルール一覧</span>
+                <span class="r-arrow">▼</span>
+            </button>
+            <div id="rules-body" class="rules-body hidden">
+                <div class="rule-item">
+                    <div class="rule-name">1. 消えるタケコプターの法則</div>
+                    <div class="rule-desc">語末の破裂音 <b>T・K・P・D・G・B</b>（覚え方：TKP＝タケコプター＋濁点のDgB）は弱く発音されるか消える。-ing の末尾 G も消える。</div>
+                    <div class="rule-ex">例: It → イッ(t) / look → ルッ(k) / morning → モーニン</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">2. 子から母への法則</div>
+                    <div class="rule-desc">前の単語が子音で終わり、次が母音（<b>A・E・I・O・U + Y</b>）で始まると音がつながる。</div>
+                    <div class="rule-ex">例: look at → ルッカッ / in a → イナ / Thank you → サンキュー</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">3. 双子の法則</div>
+                    <div class="rule-desc">同じ子音が連続すると前の子音は読まない（音ベースで判断、T と D は仲間扱い）。</div>
+                    <div class="rule-ex">例: want to → ウォントゥ / bad day → バッデイ / with the → ウィザ</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">4. Lの洗脳を解く法則</div>
+                    <div class="rule-desc">単語の後ろの方にある L は「ダークL」になり、ラ行ではなく「ウ」「オ」に近い音になる。</div>
+                    <div class="rule-ex">例: help → ヘゥ(p) / cool → クーゥ / apple → アポー</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">5. TDLの法則</div>
+                    <div class="rule-desc"><b>T や D が母音（AEIOU＋Y・L・R）に挟まれる</b>と L に近い音（日本語のラ行）になる。※ T にアクセントがある時は変化しない。</div>
+                    <div class="rule-ex">例: water → ワラ / computer → コンピューラー / Let it go → レリゴー</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">6. TDを飲み込むNの法則</div>
+                    <div class="rule-desc">T や D が N と一緒になると消える。①N が次の T/D を飲み込む、②N が手前の T/D を飲み込む、の2パターン。</div>
+                    <div class="rule-ex">例: Internet → イナネッ / curtain → カーン / don't → ドウン</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">7. Hの隠れんぼの法則</div>
+                    <div class="rule-desc"><b>have / has / had / he / his / him / her</b> の H は文の途中に登場すると消える（文頭では発音）。</div>
+                    <div class="rule-ex">例: ask him → アスキム / should have → シュダヴ / tell her → テラー</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== PHRASES LIST ========== -->
+<div id="screen-phrases" class="screen">
+    <div class="header">
+        <button class="back-btn" onclick="goHome()">‹</button>
+        <span class="header-title">📚 フレーズ一覧</span>
+        <button class="header-action" onclick="showScreen('screen-add')">＋ 追加</button>
+    </div>
+    <div class="search-wrap">
+        <input type="text" class="search-input" placeholder="🔍 日本語・英語で検索..." id="search-input" oninput="filterPhrases()">
+    </div>
+    <div class="phrases-list" id="phrases-list"></div>
+</div>
+
+<!-- ========== ADD PHRASE ========== -->
+<div id="screen-add" class="screen">
+    <div class="header">
+        <button class="back-btn" onclick="showScreen('screen-phrases')">‹</button>
+        <span class="header-title">➕ フレーズ追加</span>
+    </div>
+    <div class="form-body">
+        <div class="form-group">
+            <label class="form-label">日本語 <span class="form-required">*</span></label>
+            <textarea class="form-textarea" id="add-jp" placeholder="例：急かそうとしているのではありません"></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">英語 <span class="form-required">*</span></label>
+            <textarea class="form-textarea" id="add-en" placeholder="例：I'm not trying to rush you."></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">メモ（シチュエーション・使い方のヒント）</label>
+            <textarea class="form-textarea" id="add-memo" placeholder="例：会議中、相手に返答を急かしたくないときに使う表現" style="min-height:60px;"></textarea>
+        </div>
+        <button class="btn btn-primary" style="padding:16px;" onclick="addPhrase()">✅ 保存する</button>
+    </div>
+</div>
+
+<!-- ========== SETTINGS ========== -->
+<div id="screen-settings" class="screen">
+    <div class="header">
+        <button class="back-btn" onclick="goHome()">‹</button>
+        <span class="header-title">⚙️ 設定</span>
+    </div>
+    <div class="settings-body">
+        <div class="settings-card">
+            <label>OpenAI APIキー（音声読み上げに使用）</label>
+            <input type="password" id="cfg-apikey" placeholder="sk-..." />
+            <button class="btn btn-primary" style="margin-top:10px;padding:11px;" onclick="saveApiKey()">保存</button>
+            <p class="settings-note">キーはこの端末内だけに保存されます。</p>
+        </div>
+        <div class="settings-card">
+            <label>読み上げ速度</label>
+            <input type="range" id="cfg-rate" min="0.5" max="1.5" step="0.1" value="0.9" oninput="updateRate(this.value)">
+            <p class="settings-note" id="rate-label">現在: 0.9x（遅め推奨 → 慣れたら速くしよう）</p>
+        </div>
+        <div class="settings-card">
+            <label>データをリセット</label>
+            <p class="settings-note" style="margin-bottom:10px;">自分で追加したフレーズを含む全データを初期状態に戻します。</p>
+            <button class="btn btn-danger" style="padding:11px;" onclick="resetAllData()">リセット</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========== DETAIL MODAL ========== -->
+<div class="overlay" id="detail-overlay" onclick="maybeCloseModal(event)">
+    <div class="modal" id="detail-modal">
+        <div class="modal-handle"></div>
+        <div class="modal-jp" id="d-jp"></div>
+        <button class="modal-play-btn" onclick="playModalPhrase()">🔊 発音を聞く</button>
+        <div class="modal-en" id="d-en"></div>
+        <div class="modal-meta" id="d-meta"></div>
+        <div id="d-memo-wrap"><div class="modal-memo" id="d-memo"></div></div>
+        <div class="btn-row" style="margin-top:18px;">
+            <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
+            <button class="btn btn-danger" onclick="deletePhrase()">削除</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========== TOAST ========== -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+//  INITIAL DATA (from Excel)
+// ═══════════════════════════════════════
+const SEED = [
+  {id:'i01',date:'2025-10-10',jp:'私はその会議に3年連続で出席しました。',en:'I attended the meeting for three consecutive(straight) years. (for three years in a row)',memo:'',pronunciation:'• <b>TDL法則</b>: "attended" → Tが母音に挟まれラ行化 → 「アテン<u>レ</u>ッ」<br>• <b>TDL法則</b>: "meeting" → Tが母音挟まれ+G消え → 「ミー<u>リ</u>ン」<br>• <b>子から母</b>: "in a row" → N+A → 「<u>イナ</u>ロウ」',illust:{bg:['#DBEAFE','#93C5FD'],main:'📅',decor:['3️⃣','🏢']},starred:false},
+  {id:'i02',date:'2025-10-10',jp:'このトレーニングは連続した14日間のプログラムです。',en:'This training is a 14-day consecutive program.',memo:'',pronunciation:'• <b>タケコプター</b>: "training" → 末尾Gが消える → 「トレイニン」<br>• <b>子から母</b>: "is a" → Z+A → 「<u>イザ</u>」<br>• <b>TDL法則</b>: "consecutive" → Tが母音挟まれ → 「コンセキュ<u>リ</u>ヴ」',illust:{bg:['#D1FAE5','#86EFAC'],main:'📆',decor:['💪','1️⃣4️⃣']},starred:false},
+  {id:'i03',date:'2025-10-10',jp:'彼の言ったことを実行することは、「Komatsu-way」を体現することでもある。',en:'Carrying out what he said is also embodying the "Komatsu-way".',memo:'',pronunciation:'• <b>H隠れんぼ+TDL</b>: "what he" → heのH消え→Tが母音に挟まれラ行化 → 「<u>ワリ</u>」<br>• <b>TDL法則</b>: "said is" → Dが母音挟まれ → 「セ<u>リ</u>ズ」<br>• <b>子から母</b>: "is also" → Z+A → 「<u>イゾ</u>ールソー」<br>• <b>タケコプター</b>: "embodying" → 末尾G消え → 「エンボディン」',illust:{bg:['#FEF3C7','#FDE68A'],main:'🛤️',decor:['⭐','👣']},starred:false},
+  {id:'i04',date:'2025-10-10',jp:'条件は独身の場合、単身赴任の場合、帯同の場合で異なります。',en:'The conditions differ depending on the case: single, living alone, or accompanied by family.',memo:'',pronunciation:'• <b>タケコプター+子から母</b>: "living alone" → Gが消え+N+Aが連結 → 「<u>リビナ</u>ロウン」<br>• <b>子から母</b>: "alone or" → N+O → 「アロウ<u>ノ</u>ー」<br>• <b>タケコプター+子から母</b>: "depending on" → G消え+N+O → 「ディペンディ<u>ノ</u>ン」',illust:{bg:['#FCE7F3','#F9A8D4'],main:'👨‍👩‍👦',decor:['👤','✈️']},starred:false},
+  {id:'i05',date:'2025-10-10',jp:'風が涼しい。なんていい風だ。',en:'The breeze is cool. What a nice breeze!',memo:'',pronunciation:'• <b>TDL法則</b>: "What a" → Tが母音に挟まれラ行化 → 「<u>ワラ</u>」<br>• <b>子から母</b>: "breeze is" → Z+I → 「ブリー<u>ジズ</u>」<br>• <b>Lの洗脳</b>: "cool" → 末尾L → 「クー<u>ゥ</u>」',illust:{bg:['#CFFAFE','#67E8F9'],main:'🌬️',decor:['🍃','😌']},starred:false},
+  {id:'i06',date:'2025-10-10',jp:'遅くとも今週中には、早ければ明日にも、メールが届くはずです。',en:'You should receive an email by the end of this week at the latest, or possibly as early as tomorrow.',memo:'',pronunciation:'• <b>子から母</b>: "receive an email" → V+A, N+E連続連結 → 「リシー<u>ヴァネー</u>メイル」<br>• <b>TDL法則</b>: "latest" → Tが母音挟まれ → 「レイ<u>レ</u>ス(t)」<br>• <b>子から母</b>: "as early as" → Z+E → 「<u>アザー</u>リーアズ」<br>• <b>子から母</b>: "end of" → D+O → 「エン<u>ドブ</u>」',illust:{bg:['#E0E7FF','#A5B4FC'],main:'📧',decor:['⏰','📬']},starred:false},
+  {id:'i07',date:'2025-10-10',jp:'何時が都合よいですか？',en:'What time works for you?',memo:'',pronunciation:'• <b>双子の法則</b>: "What time" → T+T連続で前のTが消える → 「<u>ワタイム</u>」<br>• <b>子から母+Y</b>: "for you" → R+Y連結 → 「<u>フォーユ</u>」（くだけると「フォーチュ」）',illust:{bg:['#F3E8FF','#C4B5FD'],main:'🕐',decor:['❓','📆']},starred:false},
+  {id:'i08',date:'2025-10-10',jp:'LDPは自由民主党の頭文字です。',en:'LDP is an acronym for the Liberal Democratic Party.',memo:'',pronunciation:'• <b>子から母</b>: "is an acronym" → Z+A+N+A連続連結 → 「<u>イザナ</u>クロニム」<br>• <b>TDL法則</b>: "Democratic" → Tが母音挟まれ → 「デモクラ<u>リ</u>ック」<br>• <b>TDL法則</b>: "Party" → Tが母音挟まれ → 「パー<u>リ</u>ー」',illust:{bg:['#FEE2E2','#FCA5A5'],main:'🗳️',decor:['🇯🇵','📜']},starred:false},
+  {id:'i09',date:'2025-10-10',jp:'もし気になさらないなら（もしよければ）、そうして頂けると助かります。',en:"If you don't mind, I would really appreciate it if you could do that.",memo:'',pronunciation:'• <b>子から母+Y</b>: "If you" → F+Y → 「<u>イフュ</u>」<br>• <b>NがT飲み込む</b>: "don\'t" → N+T → 「<u>ドウン</u>」（Tが消える）<br>• <b>TDL法則</b>: "appreciate it" → T+I母音挟まれ → 「アプリシエイ<u>リ</u>ッ」<br>• <b>双子の法則</b>: "could do" → D+D連続 → 「<u>クッドゥ</u>」',illust:{bg:['#FEF3C7','#FCD34D'],main:'🙇',decor:['🙏','✨']},starred:false},
+  {id:'i10',date:'2025-10-10',jp:'日本では与党の党首が首相となる。',en:'In Japan, the leader of the ruling party becomes the Prime Minister.',memo:'',pronunciation:'• <b>TDL法則</b>: "leader" → Dが母音挟まれ → 「リー<u>レ</u>ー」<br>• <b>子から母</b>: "leader of" → R+O → 「リーダー<u>オブ</u>」<br>• <b>TDL法則</b>: "party" → Tが母音挟まれ → 「パー<u>リ</u>ー」<br>• <b>TDL法則</b>: "Minister" → Tが母音挟まれ → 「ミニス<u>レ</u>ー」',illust:{bg:['#FEE2E2','#FCA5A5'],main:'🏛️',decor:['👔','🇯🇵']},starred:false},
+  {id:'i11',date:'2025-10-10',jp:'長い間自民党が首相を輩出してきている。',en:'The LDP has been producing Prime Ministers for a long time.',memo:'',pronunciation:'• <b>H隠れんぼ</b>: "has been" → hasのHが消える → 「<u>\'アズ</u>ビーン」<br>• <b>タケコプター</b>: "producing" → 末尾G消え → 「プロデュースィン」<br>• <b>TDL法則</b>: "Ministers" → Tが母音挟まれ → 「ミニス<u>レ</u>ーズ」<br>• <b>子から母</b>: "for a long" → R+A連結 → 「<u>フォーラ</u>ロン」',illust:{bg:['#FEE2E2','#FCA5A5'],main:'⏳',decor:['🏛️','🇯🇵']},starred:false},
+  {id:'i12',date:'2025-10-10',jp:'彼女は感じのよい女性です。',en:'She is a pleasant woman.',memo:'',pronunciation:'• <b>子から母</b>: "She is a" → SH+I, Z+A連続 → 「<u>シーイザ</u>」<br>• <b>タケコプター</b>: "pleasant" → 末尾T弱まる → 「プレズン<u>(t)</u>」',illust:{bg:['#FCE7F3','#F9A8D4'],main:'👩',decor:['😊','🌸']},starred:false},
+  {id:'i13',date:'2025-11-18',jp:'急かそうとしているのではありません',en:"I'm not trying to rush you.",memo:'',pronunciation:'• <b>双子の法則</b>: "not trying" → T+T連続で前のTが消える → 「<u>ノトライン</u>」<br>• <b>タケコプター</b>: "trying" → 末尾G消え → 「トライン」<br>• <b>子から母+Y</b>: "rush you" → SH+Y → 「<u>ラッシュー</u>」',illust:{bg:['#DCFCE7','#86EFAC'],main:'✋',decor:['⏰','🙂']},starred:false},
+  {id:'i14',date:'2025-11-18',jp:'私は今会議に出ていて、時間が経つのを忘れていました。',en:'I am at the meeting and lost track of time.',memo:'',pronunciation:'• <b>双子の法則</b>: "lost track" → T+T連続で前のTが消える → 「<u>ロストラック</u>」<br>• <b>TDL法則</b>: "meeting" → Tが母音挟まれ+G消え → 「ミー<u>リ</u>ン」<br>• <b>子から母</b>: "track of" → K+O → 「トラッ<u>コブ</u>」<br>• <b>子から母</b>: "am at" → M+A → 「<u>アマッ</u>」',illust:{bg:['#FEF3C7','#FCD34D'],main:'⏰',decor:['😅','💼']},starred:false},
+  {id:'i15',date:'2025-11-18',jp:'彼らは専用のソフトウェアを使っている、限られた人員で効率よくやるため',en:'They use proprietary software to efficiently operate with limited number of staff.',memo:'',pronunciation:'• <b>TDL法則</b>: "limited" → Tが母音挟まれ → 「リミ<u>レ</u>ッド」<br>• <b>子から母</b>: "number of" → R+O → 「ナンバー<u>オブ</u>」<br>• <b>TDL法則</b>: "proprietary" → Tが母音挟まれ → 「プロプライエ<u>レ</u>リー」',illust:{bg:['#E0E7FF','#A5B4FC'],main:'💻',decor:['⚡','👥']},starred:false},
+  {id:'i16',date:'2025-11-18',jp:'我々は訪れました、協業が発表されたApplied Intuitionを。',en:'We visited Applied Intuition, with whom a collaboration was announced.',memo:'',pronunciation:'• <b>TDL法則</b>: "visited" → Tが母音挟まれ → 「ヴィジ<u>レ</u>ッド」<br>• <b>NがT飲み込む</b>: "Intuition" → N+T → 「<u>イニュ</u>ーション」（Tが消える）<br>• <b>子から母</b>: "was announced" → Z+A → 「<u>ワザナ</u>ウンスト」',illust:{bg:['#DBEAFE','#93C5FD'],main:'🚗',decor:['🤝','📣']},starred:false},
+  {id:'i17',date:'2025-11-18',jp:'私たちはマーケットで目立つために、異なる（方向性の違う）戦略を採用しました。',en:'We adopted a divergent strategy to stand out in the market.',memo:'',pronunciation:'• <b>TDL+子から母</b>: "adopted a" → Dが母音挟まれ+A連結 → 「アドプ<u>レダ</u>」<br>• <b>子から母</b>: "stand out" → D+O → 「スタン<u>ダウ</u>(t)」<br>• <b>TDL法則</b>: "out in" → Tが母音挟まれ → 「アウ<u>リ</u>ン」<br>• <b>TDL法則</b>: "strategy" → Tが母音挟まれ → 「ストラ<u>レ</u>ジー」',illust:{bg:['#F3E8FF','#C4B5FD'],main:'🎯',decor:['✨','📈']},starred:false},
+  {id:'i18',date:'2025-11-18',jp:'体積を計算するために、長さに幅、深さをかけなさい',en:'To calculate the volume, multiply the length by the width and depth.',memo:'',pronunciation:'• <b>Lの洗脳</b>: "volume" → 母音後のL → 「ヴァ<u>ゥ</u>ューム」<br>• <b>TDL法則</b>: "multiply" → Tが母音挟まれ → 「マ<u>ゥリ</u>プライ」<br>• <b>双子の法則</b>: "and depth" → D+D連続 → 「<u>アンデップ</u>」',illust:{bg:['#E0E7FF','#A5B4FC'],main:'📦',decor:['📏','🧮']},starred:false},
+  {id:'i19',date:'2025-11-18',jp:'どうなるか予想がつかない（番狂わせが起きる）',en:"It's unpredictable (anything can happen). All bets are off.",memo:'',pronunciation:'• <b>Lの洗脳</b>: "All" → 末尾L → 「オ<u>ゥ</u>」<br>• <b>子から母</b>: "bets are off" → S+A, R+O連続 → 「ベッ<u>ツアーオフ</u>」<br>• <b>TDL法則</b>: "unpredictable" → Tが母音挟まれ → 「アンプリ<u>リ</u>クタブル」',illust:{bg:['#F3E8FF','#C4B5FD'],main:'🎲',decor:['❓','🎰']},starred:false},
+  {id:'i20',date:'2025-11-18',jp:'AIの人々は金を使っています、思う存分（好きなだけ）',en:"AI people are spending money like there's no tomorrow. (like it's going out of style)",memo:'',pronunciation:'• <b>Lの洗脳+子から母</b>: "people are" → 末尾L+次が母音でラ行復活 → 「ピーポー<u>ラー</u>」<br>• <b>タケコプター+子から母</b>: "going out" → G消え+N+O → 「ゴーイ<u>ナウ</u>(t)」<br>• <b>TDL+子から母</b>: "out of" → Tが母音挟まれ+連結 → 「アウ<u>ラブ</u>」',illust:{bg:['#FEF3C7','#FCD34D'],main:'💸',decor:['🤖','💰']},starred:false},
+  {id:'i21',date:'2025-11-18',jp:'インフレ率は下がり、横ばいになっているようだ。',en:'The inflation rate seems to have dropped and leveled off.',memo:'',pronunciation:'• <b>H隠れんぼ</b>: "to have" → haveのH消え → 「トゥ<u>アヴ</u>」<br>• <b>双子の法則</b>: "dropped and" → D+A連結 → 「ドロッ<u>プタン</u>」<br>• <b>子から母</b>: "leveled off" → D+O → 「レヴェル<u>ドオフ</u>」',illust:{bg:['#E0E7FF','#A5B4FC'],main:'📉',decor:['➖','💹']},starred:false},
+  {id:'i22',date:'2025-11-18',jp:'政府は経済成長を促す（刺激する）ために、新しい政策を導入した',en:'The government introduced new policies to stimulate(spur) economic growth.',memo:'',pronunciation:'• <b>NがT飲み込む</b>: "introduced" → N+T → 「イ<u>(t)</u>ロデュースト」（Tが弱まる/消える）<br>• <b>TDL法則</b>: "stimulate" → Tが母音挟まれ → 「スティミュ<u>レ</u>イト」<br>• <b>TDL+子から母</b>: "stimulate economic" → 連続 → 「スティミュ<u>レイリ</u>コノミック」',illust:{bg:['#DBEAFE','#93C5FD'],main:'🏛️',decor:['📜','📈']},starred:false},
+  {id:'i23',date:'2025-11-18',jp:'その指数は上昇して横ばいになった、しかし下がってはいない。',en:"The index has risen and leveled off, but hasn't declined.",memo:'',pronunciation:'• <b>H隠れんぼ+子から母</b>: "index has" → hasのH消え+連結 → 「インデッ<u>クサズ</u>」<br>• <b>H隠れんぼ</b>: "but hasn\'t" → hasn\'tのH消え → 「バッ<u>t\'アズン(t)</u>」<br>• <b>子から母</b>: "risen and" → N+A → 「リズ<u>ナン</u>」<br>• <b>子から母</b>: "leveled off" → D+O → 「レヴェル<u>ドオフ</u>」',illust:{bg:['#DCFCE7','#86EFAC'],main:'📈',decor:['➖','📊']},starred:false},
+  {id:'i24',date:'2026-04-01',jp:'その数が多ければ多い程、次のプロセスにとってはより良いことだ。',en:'The more the number, the better for the next process.',memo:'',pronunciation:'• <b>TDL法則</b>: "the better" → Tが母音挟まれ → 「ザ <u>ベレ</u>ー」<br>• <b>タケコプター</b>: "next" → 末尾T弱まる → 「ネクス<u>(t)</u>」<br>• <b>子から母</b>: "for the next" → R+TH (consonant) 弱リンク',illust:{bg:['#DCFCE7','#86EFAC'],main:'⚙️',decor:['➕','➡️']},starred:false},
+  {id:'i25',date:'2026-04-01',jp:'このポジションでは、どの程度の経験が求められるだろうか。',en:'What level of experience is required for this position?',memo:'',pronunciation:'• <b>TDL法則</b>: "What level" → Tの後にL(半母音扱い) → 「<u>ワレ</u>ヴェル」<br>• <b>子から母連続</b>: "level of experience" → L+O, V+E → 「レヴェ<u>ロヴェ</u>クスピリエンス」<br>• <b>子から母</b>: "experience is" → S+I → 「エクスピリエン<u>シズ</u>」',illust:{bg:['#DBEAFE','#93C5FD'],main:'💼',decor:['❓','⭐']},starred:false},
+  {id:'i26',date:'2026-04-01',jp:'私は以前のアプリケーションを手本にしました。',en:'I modeled it after the previous application.',memo:'',pronunciation:'• <b>TDL+子から母</b>: "modeled it" → Dが母音挟まれ+連結 → 「モ<u>レリ</u>ッ(t)」<br>• <b>TDL+子から母</b>: "it after" → T+A母音挟まれ+連結 → 「イ<u>ラフ</u>ター」<br>• <b>子から母</b>: "previous application" → S+A → 「プリヴィア<u>サ</u>プリケーション」',illust:{bg:['#E0E7FF','#A5B4FC'],main:'📱',decor:['🔍','📋']},starred:false},
+  {id:'i27',date:'2026-04-01',jp:'私は急いでいる。',en:"I'm in a rush.",memo:'',pronunciation:'• <b>子から母連続</b>: "I\'m in a" → M+I, N+A連続 → 「<u>アイミナ</u>ラッシュ」',illust:{bg:['#FEE2E2','#FCA5A5'],main:'🏃',decor:['💨','⚡']},starred:false},
+  {id:'i28',date:'2026-04-01',jp:'私は急いでいない。',en:"I'm in no rush.",memo:'',pronunciation:'• <b>双子の法則</b>: "in no" → N+N連続で前のNが消える → 「<u>イノ</u>」<br>• <b>連続連結</b>: "I\'m in no" → 「<u>アイミノ</u>ラッシュ」',illust:{bg:['#DCFCE7','#86EFAC'],main:'🚶',decor:['😌','☕']},starred:false},
+  {id:'i29',date:'2026-04-01',jp:'決定するタイミングについて、6月が目安になると思います。',en:'Regarding the timing of the decision, I think June would be a target.',memo:'',pronunciation:'• <b>タケコプター</b>: "think June" → 末尾K弱まる → 「シン<u>(k)</u>ジューン」<br>• <b>タケコプター</b>: "would be" → 末尾D弱まる → 「ウッ<u>(d)</u>ビー」<br>• <b>TDL法則</b>: "target" → Tが母音挟まれ → 「ター<u>レ</u>ッ(t)」<br>• <b>タケコプター</b>: "Regarding/timing" → 末尾G消え',illust:{bg:['#FEF3C7','#FCD34D'],main:'📅',decor:['6️⃣','🎯']},starred:false},
+  {id:'i30',date:'2026-04-01',jp:'重たいバックパックを背負って、山頂まで登りました。',en:'I climbed to the summit carrying a heavy backpack.',memo:'',pronunciation:'• <b>双子の法則</b>: "climbed to" → D+T(TとDは仲間) → 「クライム<u>トゥ</u>」<br>• <b>タケコプター</b>: "summit" → 末尾T弱まる → 「サミ<u>(t)</u>」<br>• <b>タケコプター+子から母</b>: "carrying a" → G消え+N+A → 「<u>キャリナ</u>」',illust:{bg:['#DCFCE7','#86EFAC'],main:'🏔️',decor:['🎒','🧗']},starred:false},
+  {id:'i31',date:'2026-04-01',jp:'彼は強硬手段をとるしかない',en:'He has no choice but to play hardball.',memo:'',pronunciation:'• <b>双子の法則</b>: "but to" → T+T連続で前のTが消える → 「<u>バトゥ</u>」<br>• <b>Lの洗脳</b>: "hardball" → 末尾L → 「ハードボー<u>ゥ</u>」<br>• <b>H隠れんぼ</b>: "He has" → hasのH消える可 → 「ヒー<u>\'アズ</u>」',illust:{bg:['#FEE2E2','#FCA5A5'],main:'💪',decor:['⚾','🔨']},starred:false},
+  {id:'i32',date:'2026-04-01',jp:'マルガリータの材料を用意しておいて',en:'Get all the margarita stuff ready.',memo:'',pronunciation:'• <b>TDL+子から母</b>: "Get all" → T+A母音挟まれ+連結 → 「<u>ゲローゥ</u>」<br>• <b>TDL法則</b>: "margarita" → Tが母音挟まれ → 「マーガ<u>リ</u>ー<u>ラ</u>」<br>• <b>TDL法則</b>: "ready" → Dが母音挟まれ → 「<u>レ</u>リー」',illust:{bg:['#FEF3C7','#FCD34D'],main:'🍹',decor:['🍋','🧂']},starred:false},
+  {id:'i33',date:'2026-04-01',jp:'彼女がパッキングしている間、偶然エレベーターホールで会いましたが、彼女は無言でした。',en:"While she was packing, I happened to run into her in the elevator hall, but she didn't say anything.",memo:'',pronunciation:'• <b>H隠れんぼ+TDL</b>: "into her" → herのH消え+連結 → 「イン<u>ラ</u>ー」<br>• <b>TDL法則</b>: "elevator" → Tが母音挟まれ → 「エレベイ<u>レ</u>ー」<br>• <b>NがT飲み込む</b>: "didn\'t" → N+T → 「<u>ディン</u>(t)」（Tが消える）<br>• <b>Lの洗脳</b>: "hall" → 末尾L → 「ホー<u>ゥ</u>」<br>• <b>双子の法則</b>: "happened to" → D+T仲間 → 「ハプン<u>トゥ</u>」',illust:{bg:['#E2E8F0','#CBD5E1'],main:'🛗',decor:['🎒','🤐']},starred:false},
+  {id:'i34',date:'2026-04-01',jp:'私たちは「派閥の争い」を避けなければならない。',en:'We must avoid "factional fight".',memo:'',pronunciation:'• <b>TDL+子から母</b>: "must avoid" → T+A母音挟まれ+連結 → 「<u>マスダ</u>ヴォイド」<br>• <b>タケコプター</b>: "avoid/fight" → 末尾D/T弱まる',illust:{bg:['#FEE2E2','#FCA5A5'],main:'⚔️',decor:['🚫','👥']},starred:false},
+];
+
+// ═══════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════
+let phrases = [];
+let cfg = { apiKey: '', rate: 0.9 };
+let listenOrder = [], listenIdx = 0;
+let speakOrder  = [], speakIdx  = 0;
+let todayCount = 0, totalCount = 0;
+let activeDetailId = null;
+let recState = 'idle'; // idle | recording | processing
+let mediaRec = null, audioChunks = [], webSpeechRec = null;
+let displayMode = 'japanese';  // 'japanese' | 'illustration'
+let focusMode = false;         // true = starred-only
+
+// ═══════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════
+function boot() {
+    const sc = localStorage.getItem('eng_cfg');
+    if (sc) cfg = JSON.parse(sc);
+
+    const sp = localStorage.getItem('eng_phrases');
+    phrases = sp ? JSON.parse(sp) : SEED.map(p => ({...p, cnt:0, last:null}));
+    if (!sp) save();
+
+    // Migration: update pronunciation + illust from SEED, ensure starred field
+    let migrated = false;
+    SEED.forEach(seed => {
+        const existing = phrases.find(p => p.id === seed.id);
+        if (!existing) return;
+        if (existing.pronunciation !== seed.pronunciation) {
+            existing.pronunciation = seed.pronunciation;
+            migrated = true;
+        }
+        if (!existing.illust && seed.illust) {
+            existing.illust = seed.illust;
+            migrated = true;
+        }
+    });
+    // Ensure every phrase has starred field
+    phrases.forEach(p => {
+        if (typeof p.starred === 'undefined') { p.starred = false; migrated = true; }
+    });
+    if (migrated) save();
+
+    const today = new Date().toDateString();
+    const ss = localStorage.getItem('eng_stats');
+    const stats = ss ? JSON.parse(ss) : {};
+    todayCount = stats.date === today ? (stats.today || 0) : 0;
+    totalCount = stats.total || 0;
+
+    document.getElementById('cfg-apikey').value = cfg.apiKey || '';
+    document.getElementById('cfg-rate').value = cfg.rate;
+    document.getElementById('rate-label').textContent = `現在: ${cfg.rate}x（遅め推奨 → 慣れたら速くしよう）`;
+
+    // iOS voice preload
+    if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = ()=>{};
+    speechSynthesis.getVoices();
+
+    updateHomeStats();
+}
+
+function save() { localStorage.setItem('eng_phrases', JSON.stringify(phrases)); }
+function saveCfg() { localStorage.setItem('eng_cfg', JSON.stringify(cfg)); }
+function saveStats() {
+    localStorage.setItem('eng_stats', JSON.stringify({
+        date: new Date().toDateString(), today: todayCount, total: totalCount
+    }));
+}
+function bumpStats() {
+    todayCount++; totalCount++;
+    saveStats();
+    updateHomeStats();
+}
+function updateHomeStats() {
+    document.getElementById('stat-total').textContent = phrases.length;
+    document.getElementById('stat-today').textContent = todayCount;
+    document.getElementById('stat-all').textContent   = totalCount;
+    const starred = phrases.filter(p => p.starred).length;
+    const fc = document.getElementById('focus-count-desc');
+    if (fc) {
+        fc.textContent = starred > 0
+            ? `登録中: ${starred}件 — タップで反復練習`
+            : 'まだ登録なし — ☆ボタンで追加しよう';
+    }
+}
+
+// ═══════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════
+function showScreen(id) {
+    stopSpeech(); stopRec();
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (id === 'screen-phrases') renderList();
+    if (id === 'screen-home') updateHomeStats();
+}
+function goHome() { showScreen('screen-home'); }
+
+// ═══════════════════════════════════════
+//  LISTENING
+// ═══════════════════════════════════════
+function activePhraseIndices() {
+    // Returns array of indices into phrases[] filtered by focus mode
+    const all = [...Array(phrases.length).keys()];
+    if (!focusMode) return all;
+    return all.filter(i => phrases[i].starred);
+}
+function initListen(focus) {
+    focusMode = !!focus;
+    // Update banner & header
+    const banner = document.getElementById('l-focus-banner');
+    const header = document.getElementById('l-header-title');
+    if (focusMode) {
+        banner.classList.remove('hidden');
+        header.textContent = '⭐ 集中練習';
+    } else {
+        banner.classList.add('hidden');
+        header.textContent = '✍️ 瞬間英作文';
+    }
+    const pool = activePhraseIndices();
+    if (focusMode && pool.length === 0) {
+        toast('登録されたフレーズがありません。☆ボタンで登録してね');
+        showScreen('screen-home');
+        focusMode = false;
+        return;
+    }
+    listenOrder = shuffle(pool);
+    listenIdx = 0;
+    drawListenCard();
+}
+function shuffleListen() {
+    listenOrder = shuffle(activePhraseIndices());
+    listenIdx = 0;
+    drawListenCard();
+    toast('シャッフルしました 🔀');
+}
+function startFocusMode() {
+    const starredCount = phrases.filter(p => p.starred).length;
+    if (starredCount === 0) {
+        toast('先に ☆ ボタンでフレーズを登録してね');
+        return;
+    }
+    showScreen('screen-listen');
+    initListen(true);
+}
+
+function setMode(mode) {
+    displayMode = mode;
+    document.getElementById('mode-btn-jp').classList.toggle('active', mode === 'japanese');
+    document.getElementById('mode-btn-il').classList.toggle('active', mode === 'illustration');
+    const hint = document.getElementById('l-hint-text');
+    hint.textContent = mode === 'illustration'
+        ? 'イラストからイメージを掴んで、直接英語で言ってみよう'
+        : '日本語を見て、英語で言えるか試してから答えを見よう';
+    drawListenCard();
+}
+
+function drawListenCard() {
+    if (!listenOrder.length) return;
+    const p = phrases[listenOrder[listenIdx]];
+    // Japanese / illustration switching
+    const jpEl = document.getElementById('l-japanese');
+    const ilWrap = document.getElementById('l-illust-wrap');
+    if (displayMode === 'illustration' && p.illust) {
+        jpEl.classList.add('hidden');
+        ilWrap.classList.remove('hidden');
+        const scene = document.getElementById('l-illust-scene');
+        const bg = p.illust.bg || ['#E5E7EB','#9CA3AF'];
+        scene.style.background = `linear-gradient(135deg, ${bg[0]}, ${bg[1]})`;
+        document.getElementById('l-illust-main').textContent = p.illust.main || '💭';
+        const decor = p.illust.decor || ['',''];
+        document.getElementById('l-illust-d1').textContent = decor[0] || '';
+        document.getElementById('l-illust-d2').textContent = decor[1] || '';
+    } else {
+        jpEl.classList.remove('hidden');
+        ilWrap.classList.add('hidden');
+        jpEl.textContent = p.jp;
+    }
+    document.getElementById('l-english').textContent  = p.en;
+    document.getElementById('l-english-wrap').classList.add('hidden');
+    document.getElementById('l-answer-btn').textContent = '答えを見る';
+    document.getElementById('l-num').textContent = `${listenIdx+1} / ${listenOrder.length}`;
+    document.getElementById('l-progress').style.width = `${(listenIdx+1)/listenOrder.length*100}%`;
+    document.getElementById('l-play-status').textContent = 'タップして再生';
+    document.getElementById('l-play-btn').classList.remove('playing');
+    document.getElementById('l-play-btn').textContent = '▶';
+    // Star button
+    const starBtn = document.getElementById('l-star-btn');
+    if (p.starred) {
+        starBtn.textContent = '★';
+        starBtn.classList.add('active');
+        starBtn.title = '集中練習から外す';
+    } else {
+        starBtn.textContent = '☆';
+        starBtn.classList.remove('active');
+        starBtn.title = '集中練習に登録';
+    }
+    // 発音ポイント
+    const pronWrap = document.getElementById('l-pronunciation-wrap');
+    const pronEl   = document.getElementById('l-pronunciation');
+    if (p.pronunciation) {
+        pronEl.innerHTML = p.pronunciation;
+        pronWrap.classList.remove('hidden');
+    } else {
+        pronWrap.classList.add('hidden');
+    }
+    stopSpeech();
+}
+function toggleStar() {
+    if (!listenOrder.length) return;
+    const p = phrases[listenOrder[listenIdx]];
+    p.starred = !p.starred;
+    save();
+    drawListenCard();
+    toast(p.starred ? '⭐ 集中練習に登録しました' : '登録を解除しました');
+    updateHomeStats();
+    // If in focus mode and user unstars, and there are still others, refresh pool
+    if (focusMode && !p.starred) {
+        const remaining = activePhraseIndices();
+        if (remaining.length === 0) {
+            toast('登録フレーズが0になりました');
+            showScreen('screen-home');
+            return;
+        }
+        // Rebuild order excluding unstarred
+        const currentOriginalIdx = listenOrder[listenIdx];
+        listenOrder = listenOrder.filter(i => phrases[i].starred);
+        // Adjust index
+        if (listenIdx >= listenOrder.length) listenIdx = 0;
+        drawListenCard();
+    }
+}
+function listenNav(d) {
+    stopSpeech();
+    if (!listenOrder.length) return;
+    listenIdx = (listenIdx + d + listenOrder.length) % listenOrder.length;
+    drawListenCard();
+}
+function toggleListenAnswer() {
+    const wrap = document.getElementById('l-english-wrap');
+    const btn  = document.getElementById('l-answer-btn');
+    if (wrap.classList.contains('hidden')) {
+        wrap.classList.remove('hidden');
+        btn.textContent = '答えを隠す';
+        bumpStats();
+    } else {
+        wrap.classList.add('hidden');
+        btn.textContent = '答えを見る';
+    }
+}
+function playListen() {
+    const p = phrases[listenOrder[listenIdx]];
+    speakText(p.en, document.getElementById('l-play-btn'), document.getElementById('l-play-status'));
+}
+
+function toggleRules() {
+    const body = document.getElementById('rules-body');
+    const btn  = document.getElementById('rules-header-btn');
+    if (body.classList.contains('hidden')) {
+        body.classList.remove('hidden');
+        btn.classList.add('open');
+    } else {
+        body.classList.add('hidden');
+        btn.classList.remove('open');
+    }
+}
+
+// ═══════════════════════════════════════
+//  TTS
+// ═══════════════════════════════════════
+function speakText(text, btnEl, statusEl) {
+    stopSpeech();
+    const clean = text.replace(/\(.*?\)/g, '').trim();
+    const utt = new SpeechSynthesisUtterance(clean);
+    utt.lang  = 'en-US';
+    utt.rate  = cfg.rate;
+    utt.pitch = 1.0;
+
+    const voices = speechSynthesis.getVoices();
+    const v = voices.find(v => v.lang==='en-US' && /Samantha|Karen|Moira/.test(v.name))
+           || voices.find(v => v.lang==='en-US')
+           || voices.find(v => v.lang.startsWith('en'));
+    if (v) utt.voice = v;
+
+    if (btnEl) { btnEl.textContent='⏸'; btnEl.classList.add('playing'); }
+    if (statusEl) statusEl.textContent = '再生中...';
+
+    utt.onend = utt.onerror = () => {
+        if (btnEl) { btnEl.textContent='▶'; btnEl.classList.remove('playing'); }
+        if (statusEl) statusEl.textContent = 'もう一度タップで再生';
+    };
+    speechSynthesis.speak(utt);
+}
+function stopSpeech() { if (speechSynthesis.speaking) speechSynthesis.cancel(); }
+
+// ═══════════════════════════════════════
+//  SPEAKING
+// ═══════════════════════════════════════
+function initSpeak() {
+    speakOrder = shuffle([...Array(phrases.length).keys()]);
+    speakIdx = 0;
+    drawSpeakCard();
+}
+function shuffleSpeak() { initSpeak(); toast('シャッフルしました 🔀'); }
+
+function drawSpeakCard() {
+    if (!phrases.length) return;
+    const p = phrases[speakOrder[speakIdx]];
+    document.getElementById('s-japanese').textContent = p.jp;
+    document.getElementById('s-english').textContent  = p.en;
+    document.getElementById('s-result').classList.add('hidden');
+    document.getElementById('s-result-btns').classList.add('hidden');
+    document.getElementById('s-nav').classList.remove('hidden');
+    document.getElementById('s-record-area').classList.remove('hidden');
+    document.getElementById('s-num').textContent = `${speakIdx+1} / ${phrases.length}`;
+    document.getElementById('s-progress').style.width = `${(speakIdx+1)/phrases.length*100}%`;
+    document.getElementById('s-rec-status').textContent = 'タップして録音開始';
+    document.getElementById('s-rec-btn').classList.remove('recording');
+    recState = 'idle';
+}
+function speakNav(d) {
+    stopRec();
+    speakIdx = (speakIdx + d + phrases.length) % phrases.length;
+    drawSpeakCard();
+}
+function resetSpeak() { drawSpeakCard(); }
+function playAnswer() {
+    const p = phrases[speakOrder[speakIdx]];
+    speakText(p.en, null, null);
+}
+
+async function toggleRecording() {
+    if (recState === 'idle') {
+        startRec();
+    } else if (recState === 'recording') {
+        stopRec();
+    }
+}
+
+function startRec() {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        startWebSpeech();
+    } else if (cfg.apiKey) {
+        startMediaRec();
+    } else {
+        // Fallback: manual text entry
+        const txt = prompt('英語で回答を入力してください:');
+        if (txt) showResult(txt);
+    }
+}
+
+function startWebSpeech() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    webSpeechRec = new SR();
+    webSpeechRec.lang = 'en-US';
+    webSpeechRec.continuous = false;
+    webSpeechRec.interimResults = true;
+
+    webSpeechRec.onstart = () => {
+        recState = 'recording';
+        document.getElementById('s-rec-btn').classList.add('recording');
+        document.getElementById('s-rec-status').textContent = '🔴 話してください...';
+    };
+    webSpeechRec.onresult = e => {
+        let t = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) t += e.results[i][0].transcript;
+        document.getElementById('s-transcript').textContent = t;
+        if (e.results[e.results.length-1].isFinal) showResult(t);
+    };
+    webSpeechRec.onerror = e => {
+        recState = 'idle';
+        document.getElementById('s-rec-btn').classList.remove('recording');
+        const msgs = {
+            'not-allowed': 'マイクの許可が必要です',
+            'no-speech': '音声が検出されませんでした',
+            'network': 'ネットワークエラー'
+        };
+        document.getElementById('s-rec-status').textContent = msgs[e.error] || 'エラー: '+e.error;
+    };
+    webSpeechRec.onend = () => {
+        recState = 'idle';
+        document.getElementById('s-rec-btn').classList.remove('recording');
+    };
+    webSpeechRec.start();
+}
+
+async function startMediaRec() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        mediaRec = new MediaRecorder(stream);
+        mediaRec.ondataavailable = e => audioChunks.push(e.data);
+        mediaRec.onstop = async () => {
+            stream.getTracks().forEach(t => t.stop());
+            recState = 'processing';
+            document.getElementById('s-rec-status').textContent = '音声を解析中...';
+            await whisper(new Blob(audioChunks, {type:'audio/mp4'}));
+        };
+        mediaRec.start();
+        recState = 'recording';
+        document.getElementById('s-rec-btn').classList.add('recording');
+        document.getElementById('s-rec-status').textContent = '🔴 録音中... もう一度タップで停止';
+    } catch(e) {
+        document.getElementById('s-rec-status').textContent = 'マイクの許可が必要です';
+    }
+}
+
+function stopRec() {
+    if (webSpeechRec) { try { webSpeechRec.stop(); } catch(e){} webSpeechRec = null; }
+    if (mediaRec && mediaRec.state !== 'inactive') mediaRec.stop();
+    recState = 'idle';
+    const recBtn = document.getElementById('s-rec-btn');
+    if (recBtn) recBtn.classList.remove('recording');
+}
+
+async function whisper(blob) {
+    try {
+        const fd = new FormData();
+        fd.append('file', blob, 'rec.mp4');
+        fd.append('model', 'whisper-1');
+        fd.append('language', 'en');
+        const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${cfg.apiKey}` },
+            body: fd
+        });
+        if (!res.ok) throw new Error('API ' + res.status);
+        const data = await res.json();
+        showResult(data.text);
+    } catch(e) {
+        recState = 'idle';
+        document.getElementById('s-rec-status').textContent = 'エラー: ' + e.message;
+    }
+}
+
+function showResult(transcript) {
+    recState = 'idle';
+    document.getElementById('s-rec-btn').classList.remove('recording');
+
+    const p = phrases[speakOrder[speakIdx]];
+    const score = calcScore(transcript, p.en);
+
+    document.getElementById('s-transcript').textContent = transcript;
+
+    const box = document.getElementById('s-score-box');
+    const num = document.getElementById('s-score-num');
+    const msg = document.getElementById('s-score-msg');
+    box.className = 'score-box ' + (score>=80 ? 's-great' : score>=50 ? 's-good' : 's-try');
+    num.textContent = (score>=80 ? '🎉' : score>=50 ? '👍' : '💪') + ' ' + score + '%';
+    msg.textContent = score>=80 ? '素晴らしい！' : score>=50 ? 'もう少し！' : '練習しよう！';
+
+    document.getElementById('s-result').classList.remove('hidden');
+    document.getElementById('s-result-btns').classList.remove('hidden');
+    document.getElementById('s-nav').classList.add('hidden');
+    document.getElementById('s-record-area').classList.add('hidden');
+
+    // update practice count
+    const idx = speakOrder[speakIdx];
+    phrases[idx].cnt = (phrases[idx].cnt || 0) + 1;
+    phrases[idx].last = new Date().toISOString();
+    save();
+    bumpStats();
+}
+
+function calcScore(spoken, correct) {
+    const norm = t => t.replace(/\(.*?\)/g,'').toLowerCase().replace(/[^\w\s]/g,'').trim().split(/\s+/).filter(Boolean);
+    const sw = norm(spoken), cw = norm(correct);
+    if (!cw.length) return 100;
+    const pool = [...cw];
+    let hit = 0;
+    for (const w of sw) {
+        const i = pool.indexOf(w);
+        if (i !== -1) { hit++; pool.splice(i, 1); }
+    }
+    return Math.min(Math.round(hit / cw.length * 100), 100);
+}
+
+// ═══════════════════════════════════════
+//  PHRASES LIST
+// ═══════════════════════════════════════
+function renderList(q = '') {
+    const el = document.getElementById('phrases-list');
+    const list = q
+        ? phrases.filter(p => p.jp.includes(q) || p.en.toLowerCase().includes(q.toLowerCase()) || (p.memo||'').includes(q))
+        : phrases;
+
+    if (!list.length) {
+        el.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>フレーズが見つかりません</p></div>`;
+        return;
+    }
+    el.innerHTML = list.map(p => `
+        <div class="phrase-item" onclick="openModal('${p.id}')">
+            <div class="pi-jp">${esc(p.jp)}</div>
+            <div class="pi-en">${esc(p.en)}</div>
+            <div class="pi-meta">
+                <span>📅 ${p.date}</span>
+                ${p.memo ? '<span>📝 メモあり</span>' : ''}
+                ${p.cnt ? `<span>🔁 ${p.cnt}回</span>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+function filterPhrases() { renderList(document.getElementById('search-input').value); }
+
+// ═══════════════════════════════════════
+//  DETAIL MODAL
+// ═══════════════════════════════════════
+function openModal(id) {
+    const p = phrases.find(x => x.id === id);
+    if (!p) return;
+    activeDetailId = id;
+    document.getElementById('d-jp').textContent = p.jp;
+    document.getElementById('d-en').textContent = p.en;
+    document.getElementById('d-meta').textContent =
+        `📅 登録日: ${p.date}` + (p.cnt ? `　🔁 練習: ${p.cnt}回` : '');
+    const mw = document.getElementById('d-memo-wrap');
+    if (p.memo) {
+        document.getElementById('d-memo').textContent = '📝 ' + p.memo;
+        mw.classList.remove('hidden');
+    } else {
+        mw.classList.add('hidden');
+    }
+    document.getElementById('detail-overlay').classList.add('active');
+}
+function closeModal() {
+    document.getElementById('detail-overlay').classList.remove('active');
+    activeDetailId = null;
+}
+function maybeCloseModal(e) {
+    if (e.target === document.getElementById('detail-overlay')) closeModal();
+}
+function playModalPhrase() {
+    const p = phrases.find(x => x.id === activeDetailId);
+    if (p) speakText(p.en, null, null);
+}
+function deletePhrase() {
+    if (!activeDetailId) return;
+    if (!confirm('このフレーズを削除しますか？')) return;
+    phrases = phrases.filter(p => p.id !== activeDetailId);
+    save();
+    closeModal();
+    renderList(document.getElementById('search-input').value);
+    updateHomeStats();
+    toast('削除しました');
+}
+
+// ═══════════════════════════════════════
+//  ADD PHRASE
+// ═══════════════════════════════════════
+function addPhrase() {
+    const jp   = document.getElementById('add-jp').value.trim();
+    const en   = document.getElementById('add-en').value.trim();
+    const memo = document.getElementById('add-memo').value.trim();
+    if (!jp || !en) { toast('日本語と英語は必須です'); return; }
+
+    const today = new Date().toISOString().slice(0,10);
+    phrases.unshift({ id:'u'+Date.now(), date:today, jp, en, memo, cnt:0, last:null, starred:false });
+    save();
+    document.getElementById('add-jp').value = '';
+    document.getElementById('add-en').value = '';
+    document.getElementById('add-memo').value = '';
+    updateHomeStats();
+    toast('追加しました ✅');
+    showScreen('screen-phrases');
+}
+
+// ═══════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════
+function saveApiKey() {
+    cfg.apiKey = document.getElementById('cfg-apikey').value.trim();
+    saveCfg();
+    toast('APIキーを保存しました ✅');
+}
+function updateRate(v) {
+    cfg.rate = parseFloat(v);
+    document.getElementById('rate-label').textContent = `現在: ${v}x（遅め推奨 → 慣れたら速くしよう）`;
+    saveCfg();
+}
+function resetAllData() {
+    if (!confirm('全データを初期状態に戻しますか？追加したフレーズも削除されます。')) return;
+    phrases = SEED.map(p => ({...p, cnt:0, last:null}));
+    save();
+    todayCount = 0; totalCount = 0; saveStats();
+    updateHomeStats();
+    toast('リセットしました');
+}
+
+// ═══════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════
+function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// ═══════════════════════════════════════
+//  START
+// ═══════════════════════════════════════
+boot();
+</script>
+</body>
+</html>
