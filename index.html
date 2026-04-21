@@ -382,6 +382,39 @@
         .empty-state .icon { font-size: 52px; margin-bottom: 14px; }
         .empty-state p { font-size: 15px; }
 
+        /* ── RULES PANEL ── */
+        .rules-panel {
+            margin: 14px 16px 16px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .rules-header {
+            width: 100%;
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            color: #78350F;
+            padding: 13px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .rules-header .r-arrow { font-size: 12px; transition: transform 0.2s; }
+        .rules-header.open .r-arrow { transform: rotate(180deg); }
+        .rules-body { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+        .rule-item {
+            background: #FFFBEB;
+            border-left: 3px solid #F59E0B;
+            border-radius: 8px;
+            padding: 9px 11px;
+        }
+        .rule-name { font-size: 13px; font-weight: 700; color: #78350F; margin-bottom: 3px; }
+        .rule-desc { font-size: 12px; color: #422006; line-height: 1.55; }
+        .rule-ex { font-size: 11.5px; color: #92400E; margin-top: 4px; }
+
         /* ── UTILITY ── */
         .hidden { display: none !important; }
         .divider { height: 1px; background: var(--border); margin: 4px 0; }
@@ -483,6 +516,51 @@
             <button class="nav-arrow" onclick="listenNav(-1)">‹</button>
             <button class="nav-arrow" onclick="listenNav(1)">›</button>
         </div>
+
+        <!-- 発音ルール一覧（いつでも確認） -->
+        <div class="rules-panel">
+            <button class="rules-header" id="rules-header-btn" onclick="toggleRules()">
+                <span>📖 7つの発音ルール一覧</span>
+                <span class="r-arrow">▼</span>
+            </button>
+            <div id="rules-body" class="rules-body hidden">
+                <div class="rule-item">
+                    <div class="rule-name">1. 消えるタケコプターの法則</div>
+                    <div class="rule-desc">語末の破裂音 <b>T・K・P・D・G・B</b>（覚え方：TKP＝タケコプター＋濁点のDgB）は弱く発音されるか消える。-ing の末尾 G も消える。</div>
+                    <div class="rule-ex">例: It → イッ(t) / look → ルッ(k) / morning → モーニン</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">2. 子から母への法則</div>
+                    <div class="rule-desc">前の単語が子音で終わり、次が母音（<b>A・E・I・O・U + Y</b>）で始まると音がつながる。</div>
+                    <div class="rule-ex">例: look at → ルッカッ / in a → イナ / Thank you → サンキュー</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">3. 双子の法則</div>
+                    <div class="rule-desc">同じ子音が連続すると前の子音は読まない（音ベースで判断、T と D は仲間扱い）。</div>
+                    <div class="rule-ex">例: want to → ウォントゥ / bad day → バッデイ / with the → ウィザ</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">4. Lの洗脳を解く法則</div>
+                    <div class="rule-desc">単語の後ろの方にある L は「ダークL」になり、ラ行ではなく「ウ」「オ」に近い音になる。</div>
+                    <div class="rule-ex">例: help → ヘゥ(p) / cool → クーゥ / apple → アポー</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">5. TDLの法則</div>
+                    <div class="rule-desc"><b>T や D が母音（AEIOU＋Y・L・R）に挟まれる</b>と L に近い音（日本語のラ行）になる。※ T にアクセントがある時は変化しない。</div>
+                    <div class="rule-ex">例: water → ワラ / computer → コンピューラー / Let it go → レリゴー</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">6. TDを飲み込むNの法則</div>
+                    <div class="rule-desc">T や D が N と一緒になると消える。①N が次の T/D を飲み込む、②N が手前の T/D を飲み込む、の2パターン。</div>
+                    <div class="rule-ex">例: Internet → イナネッ / curtain → カーン / don't → ドウン</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-name">7. Hの隠れんぼの法則</div>
+                    <div class="rule-desc"><b>have / has / had / he / his / him / her</b> の H は文の途中に登場すると消える（文頭では発音）。</div>
+                    <div class="rule-ex">例: ask him → アスキム / should have → シュダヴ / tell her → テラー</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -572,40 +650,40 @@
 //  INITIAL DATA (from Excel)
 // ═══════════════════════════════════════
 const SEED = [
-  {id:'i01',date:'2025-10-10',jp:'私はその会議に3年連続で出席しました。',en:'I attended the meeting for three consecutive(straight) years. (for three years in a row)',memo:'',pronunciation:'• <b>TDL法則</b>: "attended" → 「アテンデッド」でなく「アテン<u>D</u>ed」（TがA・Eに挟まれ柔らかくなる）<br>• <b>子から母</b>: "in a row" → 「イン ア ロウ」でなく「イ<u>ナ</u>ロウ」とつながる'},
-  {id:'i02',date:'2025-10-10',jp:'このトレーニングは連続した14日間のプログラムです。',en:'This training is a 14-day consecutive program.',memo:'',pronunciation:'• <b>子から母</b>: "is a" → 「イズ ア」でなく「イ<u>ザ</u>」とつながる<br>• <b>双子の法則</b>: "This training" → s+t連続で「ディ<u>ス</u>トレイニン」（末尾Gは消える）'},
-  {id:'i03',date:'2025-10-10',jp:'彼の言ったことを実行することは、「Komatsu-way」を体現することでもある。',en:'Carrying out what he said is also embodying the "Komatsu-way".',memo:'',pronunciation:'• <b>H隠れんぼ+TDL</b>: "what he" → "he"のHが消え+TDL → 「ワッ<u>テ</u>」「ワ<u>デ</u>」のように聞こえる<br>• <b>子から母</b>: "is also" → Z+A → 「イ<u>ズオルソー</u>」とつながる'},
-  {id:'i04',date:'2025-10-10',jp:'条件は独身の場合、単身赴任の場合、帯同の場合で異なります。',en:'The conditions differ depending on the case: single, living alone, or accompanied by family.',memo:'',pronunciation:'• <b>子から母</b>: "living alone" → G+A → 「リヴィン<u>ガ</u>ロウン」とつながる<br>• <b>Lの洗脳</b>: "alone" の L はダークL → 「ア<u>ロ</u>ウン」でなく「ア<u>Oウ</u>ン」に近い'},
-  {id:'i05',date:'2025-10-10',jp:'風が涼しい。なんていい風だ。',en:'The breeze is cool. What a nice breeze!',memo:'',pronunciation:'• <b>TDL法則</b>: "What a" → T が A に挟まれ → 「ワット ア」でなく「<u>ワダ</u>」<br>• <b>Lの洗脳</b>: "cool" の語末L → 「クール」でなく「<u>クーゥ</u>」'},
-  {id:'i06',date:'2025-10-10',jp:'遅くとも今週中には、早ければ明日にも、メールが届くはずです。',en:'You should receive an email by the end of this week at the latest, or possibly as early as tomorrow.',memo:'',pronunciation:'• <b>子から母</b>: "receive an email" → V+A, N+E → 「リシー<u>ヴァン</u>イメイル」<br>• <b>TDL法則</b>: "latest" の T → 「レイテスト」でなく「ライ<u>D</u>est」<br>• <b>子から母</b>: "as early as" → Z+E → 「ア<u>ズアーリー</u>アズ」'},
-  {id:'i07',date:'2025-10-10',jp:'何時が都合よいですか？',en:'What time works for you?',memo:'',pronunciation:'• <b>双子の法則</b>: "What time" → t+t → 「ワット タイム」でなく「<u>ワタイム</u>」（T1つ）<br>• <b>子から母+Y</b>: "for you" → R+Y → 「フォー ユー」でなく「<u>フォーチュ</u>」に近い'},
-  {id:'i08',date:'2025-10-10',jp:'LDPは自由民主党の頭文字です。',en:'LDP is an acronym for the Liberal Democratic Party.',memo:'',pronunciation:'• <b>子から母</b>: "is an acronym" → Z+A+N → 「イ<u>ザナ</u>クロニム」<br>• <b>TDL法則</b>: "Democratic" の T → 「デモクラ<u>D</u>ィック」<br>• <b>TDL法則</b>: "Party" → 「パーティー」でなく「パー<u>D</u>y」'},
-  {id:'i09',date:'2025-10-10',jp:'もし気になさらないなら（もしよければ）、そうして頂けると助かります。',en:"If you don't mind, I would really appreciate it if you could do that.",memo:'',pronunciation:'• <b>タケコプター</b>: "don\'t" → T弱まる → 「ドウン<u>(t)</u>」<br>• <b>子から母+Y</b>: "If you" → F+Y → 「イ<u>フュ</u>」<br>• <b>TDL法則</b>: "appreciate it" → T+I → 「アプリシェイ<u>D</u>ット」'},
-  {id:'i10',date:'2025-10-10',jp:'日本では与党の党首が首相となる。',en:'In Japan, the leader of the ruling party becomes the Prime Minister.',memo:'',pronunciation:'• <b>TDL法則</b>: "party" → 「パーティー」でなく「パー<u>D</u>y」<br>• <b>TDL法則</b>: "Minister" → T が母音に挟まれ → 「ミニス<u>D</u>er」<br>• <b>子から母</b>: "leader of" → R+O → 「リー<u>ダーオブ</u>」'},
-  {id:'i11',date:'2025-10-10',jp:'長い間自民党が首相を輩出してきている。',en:'The LDP has been producing Prime Ministers for a long time.',memo:'',pronunciation:'• <b>H隠れんぼ</b>: "has been" → "has" のHが消える → 「LDP <u>\'az</u> ビーン」<br>• <b>子から母</b>: "for a long" → R+A → 「フォー<u>アロング</u>」'},
-  {id:'i12',date:'2025-10-10',jp:'彼女は感じのよい女性です。',en:'She is a pleasant woman.',memo:'',pronunciation:'• <b>子から母</b>: "is a" → Z+A → 「<u>イザ</u>」; "She is" → SH+I → 「シー<u>イズ</u>」<br>• <b>タケコプター</b>: "pleasant" 末尾T → 「プレズン<u>(t)</u>」と弱まる'},
-  {id:'i13',date:'2025-11-18',jp:'急かそうとしているのではありません',en:"I'm not trying to rush you.",memo:'',pronunciation:'• <b>双子の法則</b>: "not trying" → t+t → 「ノッ<u>ト</u>ライイング」でなく「<u>ノトライ</u>ング」<br>• <b>子から母+Y</b>: "rush you" → SH+Y → 「ラッシュー」でなく「<u>ラッシャ</u>」に近い'},
-  {id:'i14',date:'2025-11-18',jp:'私は今会議に出ていて、時間が経つのを忘れていました。',en:'I am at the meeting and lost track of time.',memo:'',pronunciation:'• <b>双子の法則</b>: "lost track" → t+t → 「ロスト トラック」でなく「<u>ロストラック</u>」<br>• <b>子から母</b>: "track of time" → K+O → 「トラック<u>オブ</u>タイム」'},
-  {id:'i15',date:'2025-11-18',jp:'彼らは専用のソフトウェアを使っている、限られた人員で効率よくやるため',en:'They use proprietary software to efficiently operate with limited number of staff.',memo:'',pronunciation:'• <b>TDL法則</b>: "limited" → T が母音に挟まれ → 「リミテッド」でなく「リミ<u>D</u>ed」<br>• <b>子から母</b>: "number of" → R+O → 「ナンバー<u>オブ</u>」'},
-  {id:'i16',date:'2025-11-18',jp:'我々は訪れました、協業が発表されたApplied Intuitionを。',en:'We visited Applied Intuition, with whom a collaboration was announced.',memo:'',pronunciation:'• <b>TDL法則</b>: "visited" → T が母音に挟まれ → 「ヴィジテッド」でなく「ヴィジ<u>D</u>ed」<br>• <b>子から母</b>: "was announced" → Z+A → 「ウォ<u>ズアナ</u>ウンスト」'},
-  {id:'i17',date:'2025-11-18',jp:'私たちはマーケットで目立つために、異なる（方向性の違う）戦略を採用しました。',en:'We adopted a divergent strategy to stand out in the market.',memo:'',pronunciation:'• <b>TDL+子から母</b>: "adopted a" → T+A → 「アドプテッド ア」でなく「アドプ<u>Deda</u>」<br>• <b>TDL法則</b>: "out in" → T が U と I に挟まれ → 「アウ<u>D</u>イン」'},
-  {id:'i18',date:'2025-11-18',jp:'体積を計算するために、長さに幅、深さをかけなさい',en:'To calculate the volume, multiply the length by the width and depth.',memo:'',pronunciation:'• <b>Lの洗脳</b>: "volume" → L はダークL → 「ヴォリューム」でなく「ヴァ<u>Oュ</u>ーム」<br>• <b>Lの洗脳</b>: "multiply" の末尾L → 「マルティプ<u>Oaɪ</u>」'},
-  {id:'i19',date:'2025-11-18',jp:'どうなるか予想がつかない（番狂わせが起きる）',en:"It's unpredictable (anything can happen). All bets are off.",memo:'',pronunciation:'• <b>Lの洗脳</b>: "All" → L はダークL → 「オール」でなく「オ<u>ゥ</u>」<br>• <b>子から母</b>: "bets are off" → Z+A, R+O → 「ベッ<u>ツアーオフ</u>」'},
-  {id:'i20',date:'2025-11-18',jp:'AIの人々は金を使っています、思う存分（好きなだけ）',en:"AI people are spending money like there's no tomorrow. (like it's going out of style)",memo:'',pronunciation:'• <b>TDL+子から母</b>: "out of" → T が U・O に挟まれ → 「アウト オブ」でなく「アウ<u>Dof</u>」<br>• <b>子から母</b>: "like it\'s going out" → 連続してつながる'},
-  {id:'i21',date:'2025-11-18',jp:'インフレ率は下がり、横ばいになっているようだ。',en:'The inflation rate seems to have dropped and leveled off.',memo:'',pronunciation:'• <b>H隠れんぼ</b>: "seems to have" → "have" のHが消える → 「シームズ タ<u>v</u>」<br>• <b>TDL+Lの洗脳</b>: "leveled off" → D+O → 「レヴェ<u>Oドオフ</u>」'},
-  {id:'i22',date:'2025-11-18',jp:'政府は経済成長を促す（刺激する）ために、新しい政策を導入した',en:'The government introduced new policies to stimulate(spur) economic growth.',memo:'',pronunciation:'• <b>子から母</b>: "introduced new" → D+N → 「イントロ<u>デュースドニュー</u>」<br>• <b>TDL法則</b>: "stimulate" → T が母音に挟まれ → 「スティミュ<u>D</u>eイト」'},
-  {id:'i23',date:'2025-11-18',jp:'その指数は上昇して横ばいになった、しかし下がってはいない。',en:"The index has risen and leveled off, but hasn't declined.",memo:'',pronunciation:'• <b>H隠れんぼ</b>: "index has" → "has" のHが消える → 「インデックス <u>\'az</u>」<br>• <b>H隠れんぼ</b>: "but hasn\'t" → "hasn\'t" のHが消える → 「バッ<u>t \'aznt</u>」'},
-  {id:'i24',date:'2026-04-01',jp:'その数が多ければ多い程、次のプロセスにとってはより良いことだ。',en:'The more the number, the better for the next process.',memo:'',pronunciation:'• <b>TDL法則</b>: "the better" → T が母音に挟まれ → 「ザ ベター」でなく「ザ<u>ベDer</u>」<br>• <b>子から母</b>: "for the next" → R+TH → 「フォー<u>ザネクスト</u>」'},
-  {id:'i25',date:'2026-04-01',jp:'このポジションでは、どの程度の経験が求められるだろうか。',en:'What level of experience is required for this position?',memo:'',pronunciation:'• <b>TDL法則</b>: "What level" → T の後ろにL(半母音扱い) → 「ワット レヴェル」でなく「<u>ワレヴェル</u>」<br>• <b>子から母</b>: "of experience is" → F+E, Z+I → 「オブ<u>イクスピリエンス</u>イズ」'},
-  {id:'i26',date:'2026-04-01',jp:'私は以前のアプリケーションを手本にしました。',en:'I modeled it after the previous application.',memo:'',pronunciation:'• <b>TDL法則</b>: "modeled it" → D が E と I に挟まれ → 「モデ<u>OD</u>ット」<br>• <b>TDL法則</b>: "it after" → T が I と A に挟まれ → 「イット アフター」でなく「イ<u>Dアフター</u>」'},
-  {id:'i27',date:'2026-04-01',jp:'私は急いでいる。',en:"I'm in a rush.",memo:'',pronunciation:'• <b>子から母連続</b>: "I\'m in a rush" → M+I, N+A → 「アイム イン ア」でなく「<u>アイミナ</u>ラッシュ」'},
-  {id:'i28',date:'2026-04-01',jp:'私は急いでいない。',en:"I'm in no rush.",memo:'',pronunciation:'• <b>双子の法則</b>: "in no" → N+N → 「イン ノー」でなく「<u>イノ</u>」（Nひとつ）<br>• <b>連続連結</b>: "I\'m in no rush" → 「<u>アイミノ</u>ラッシュ」'},
-  {id:'i29',date:'2026-04-01',jp:'決定するタイミングについて、6月が目安になると思います。',en:'Regarding the timing of the decision, I think June would be a target.',memo:'',pronunciation:'• <b>タケコプター</b>: "think June" → K弱まる → 「シン<u>(k)</u> ジューン」<br>• <b>タケコプター</b>: "would be" → D弱まる → 「ウッ<u>(d)</u> ビー」'},
-  {id:'i30',date:'2026-04-01',jp:'重たいバックパックを背負って、山頂まで登りました。',en:'I climbed to the summit carrying a heavy backpack.',memo:'',pronunciation:'• <b>双子の法則</b>: "climbed to" → D+T(兄弟音) → 「クライムド トゥ」でなく「クライム<u>トゥ</u>」<br>• <b>タケコプター</b>: "summit" 末尾T → 「サミッ<u>(t)</u>」と弱まる'},
-  {id:'i31',date:'2026-04-01',jp:'彼は強硬手段をとるしかない',en:'He has no choice but to play hardball.',memo:'',pronunciation:'• <b>双子の法則</b>: "but to" → T+T → 「バット トゥ」でなく「バ<u>トゥ</u>プレイ」<br>• <b>Lの洗脳</b>: "hardball" の末尾L → 「ハードボール」でなく「ハードボー<u>ゥ</u>」'},
-  {id:'i32',date:'2026-04-01',jp:'マルガリータの材料を用意しておいて',en:'Get all the margarita stuff ready.',memo:'',pronunciation:'• <b>TDL法則</b>: "Get all" → T が E と A に挟まれ → 「ゲット オール」でなく「<u>ゲDオール</u>」<br>• <b>TDL法則</b>: "margarita" の T → 「マルガリータ」でなく「マルガリ<u>Da</u>」'},
-  {id:'i33',date:'2026-04-01',jp:'彼女がパッキングしている間、偶然エレベーターホールで会いましたが、彼女は無言でした。',en:"While she was packing, I happened to run into her in the elevator hall, but she didn't say anything.",memo:'',pronunciation:'• <b>H隠れんぼ</b>: "into her" → "her" のHが消え → 「イントゥ <u>\'er</u>」とつながる<br>• <b>TDL法則</b>: "elevator" → T が A と O に挟まれ → 「エレヴェイ<u>D</u>or」<br>• <b>NがT飲み込む</b>: "didn\'t" → N+T → 「ディドン<u>(t)</u>」'},
-  {id:'i34',date:'2026-04-01',jp:'私たちは「派閥の争い」を避けなければならない。',en:'We must avoid "factional fight".',memo:'',pronunciation:'• <b>TDL法則</b>: "must avoid" → T が U と A に挟まれ → 「マスト アヴォイド」でなく「マ<u>Dアヴォイド</u>」<br>• <b>TDL法則</b>: "factional" → T が A と I に挟まれ → 「ファク<u>D</u>ional」'},
+  {id:'i01',date:'2025-10-10',jp:'私はその会議に3年連続で出席しました。',en:'I attended the meeting for three consecutive(straight) years. (for three years in a row)',memo:'',pronunciation:'• <b>TDL法則</b>: "attended" → Tが母音に挟まれラ行化 → 「アテン<u>レ</u>ッ」<br>• <b>TDL法則</b>: "meeting" → Tが母音挟まれ+G消え → 「ミー<u>リ</u>ン」<br>• <b>子から母</b>: "in a row" → N+A → 「<u>イナ</u>ロウ」'},
+  {id:'i02',date:'2025-10-10',jp:'このトレーニングは連続した14日間のプログラムです。',en:'This training is a 14-day consecutive program.',memo:'',pronunciation:'• <b>タケコプター</b>: "training" → 末尾Gが消える → 「トレイニン」<br>• <b>子から母</b>: "is a" → Z+A → 「<u>イザ</u>」<br>• <b>TDL法則</b>: "consecutive" → Tが母音挟まれ → 「コンセキュ<u>リ</u>ヴ」'},
+  {id:'i03',date:'2025-10-10',jp:'彼の言ったことを実行することは、「Komatsu-way」を体現することでもある。',en:'Carrying out what he said is also embodying the "Komatsu-way".',memo:'',pronunciation:'• <b>H隠れんぼ+TDL</b>: "what he" → heのH消え→Tが母音に挟まれラ行化 → 「<u>ワリ</u>」<br>• <b>TDL法則</b>: "said is" → Dが母音挟まれ → 「セ<u>リ</u>ズ」<br>• <b>子から母</b>: "is also" → Z+A → 「<u>イゾ</u>ールソー」<br>• <b>タケコプター</b>: "embodying" → 末尾G消え → 「エンボディン」'},
+  {id:'i04',date:'2025-10-10',jp:'条件は独身の場合、単身赴任の場合、帯同の場合で異なります。',en:'The conditions differ depending on the case: single, living alone, or accompanied by family.',memo:'',pronunciation:'• <b>タケコプター+子から母</b>: "living alone" → Gが消え+N+Aが連結 → 「<u>リビナ</u>ロウン」<br>• <b>子から母</b>: "alone or" → N+O → 「アロウ<u>ノ</u>ー」<br>• <b>タケコプター+子から母</b>: "depending on" → G消え+N+O → 「ディペンディ<u>ノ</u>ン」'},
+  {id:'i05',date:'2025-10-10',jp:'風が涼しい。なんていい風だ。',en:'The breeze is cool. What a nice breeze!',memo:'',pronunciation:'• <b>TDL法則</b>: "What a" → Tが母音に挟まれラ行化 → 「<u>ワラ</u>」<br>• <b>子から母</b>: "breeze is" → Z+I → 「ブリー<u>ジズ</u>」<br>• <b>Lの洗脳</b>: "cool" → 末尾L → 「クー<u>ゥ</u>」'},
+  {id:'i06',date:'2025-10-10',jp:'遅くとも今週中には、早ければ明日にも、メールが届くはずです。',en:'You should receive an email by the end of this week at the latest, or possibly as early as tomorrow.',memo:'',pronunciation:'• <b>子から母</b>: "receive an email" → V+A, N+E連続連結 → 「リシー<u>ヴァネー</u>メイル」<br>• <b>TDL法則</b>: "latest" → Tが母音挟まれ → 「レイ<u>レ</u>ス(t)」<br>• <b>子から母</b>: "as early as" → Z+E → 「<u>アザー</u>リーアズ」<br>• <b>子から母</b>: "end of" → D+O → 「エン<u>ドブ</u>」'},
+  {id:'i07',date:'2025-10-10',jp:'何時が都合よいですか？',en:'What time works for you?',memo:'',pronunciation:'• <b>双子の法則</b>: "What time" → T+T連続で前のTが消える → 「<u>ワタイム</u>」<br>• <b>子から母+Y</b>: "for you" → R+Y連結 → 「<u>フォーユ</u>」（くだけると「フォーチュ」）'},
+  {id:'i08',date:'2025-10-10',jp:'LDPは自由民主党の頭文字です。',en:'LDP is an acronym for the Liberal Democratic Party.',memo:'',pronunciation:'• <b>子から母</b>: "is an acronym" → Z+A+N+A連続連結 → 「<u>イザナ</u>クロニム」<br>• <b>TDL法則</b>: "Democratic" → Tが母音挟まれ → 「デモクラ<u>リ</u>ック」<br>• <b>TDL法則</b>: "Party" → Tが母音挟まれ → 「パー<u>リ</u>ー」'},
+  {id:'i09',date:'2025-10-10',jp:'もし気になさらないなら（もしよければ）、そうして頂けると助かります。',en:"If you don't mind, I would really appreciate it if you could do that.",memo:'',pronunciation:'• <b>子から母+Y</b>: "If you" → F+Y → 「<u>イフュ</u>」<br>• <b>NがT飲み込む</b>: "don\'t" → N+T → 「<u>ドウン</u>」（Tが消える）<br>• <b>TDL法則</b>: "appreciate it" → T+I母音挟まれ → 「アプリシエイ<u>リ</u>ッ」<br>• <b>双子の法則</b>: "could do" → D+D連続 → 「<u>クッドゥ</u>」'},
+  {id:'i10',date:'2025-10-10',jp:'日本では与党の党首が首相となる。',en:'In Japan, the leader of the ruling party becomes the Prime Minister.',memo:'',pronunciation:'• <b>TDL法則</b>: "leader" → Dが母音挟まれ → 「リー<u>レ</u>ー」<br>• <b>子から母</b>: "leader of" → R+O → 「リーダー<u>オブ</u>」<br>• <b>TDL法則</b>: "party" → Tが母音挟まれ → 「パー<u>リ</u>ー」<br>• <b>TDL法則</b>: "Minister" → Tが母音挟まれ → 「ミニス<u>レ</u>ー」'},
+  {id:'i11',date:'2025-10-10',jp:'長い間自民党が首相を輩出してきている。',en:'The LDP has been producing Prime Ministers for a long time.',memo:'',pronunciation:'• <b>H隠れんぼ</b>: "has been" → hasのHが消える → 「<u>\'アズ</u>ビーン」<br>• <b>タケコプター</b>: "producing" → 末尾G消え → 「プロデュースィン」<br>• <b>TDL法則</b>: "Ministers" → Tが母音挟まれ → 「ミニス<u>レ</u>ーズ」<br>• <b>子から母</b>: "for a long" → R+A連結 → 「<u>フォーラ</u>ロン」'},
+  {id:'i12',date:'2025-10-10',jp:'彼女は感じのよい女性です。',en:'She is a pleasant woman.',memo:'',pronunciation:'• <b>子から母</b>: "She is a" → SH+I, Z+A連続 → 「<u>シーイザ</u>」<br>• <b>タケコプター</b>: "pleasant" → 末尾T弱まる → 「プレズン<u>(t)</u>」'},
+  {id:'i13',date:'2025-11-18',jp:'急かそうとしているのではありません',en:"I'm not trying to rush you.",memo:'',pronunciation:'• <b>双子の法則</b>: "not trying" → T+T連続で前のTが消える → 「<u>ノトライン</u>」<br>• <b>タケコプター</b>: "trying" → 末尾G消え → 「トライン」<br>• <b>子から母+Y</b>: "rush you" → SH+Y → 「<u>ラッシュー</u>」'},
+  {id:'i14',date:'2025-11-18',jp:'私は今会議に出ていて、時間が経つのを忘れていました。',en:'I am at the meeting and lost track of time.',memo:'',pronunciation:'• <b>双子の法則</b>: "lost track" → T+T連続で前のTが消える → 「<u>ロストラック</u>」<br>• <b>TDL法則</b>: "meeting" → Tが母音挟まれ+G消え → 「ミー<u>リ</u>ン」<br>• <b>子から母</b>: "track of" → K+O → 「トラッ<u>コブ</u>」<br>• <b>子から母</b>: "am at" → M+A → 「<u>アマッ</u>」'},
+  {id:'i15',date:'2025-11-18',jp:'彼らは専用のソフトウェアを使っている、限られた人員で効率よくやるため',en:'They use proprietary software to efficiently operate with limited number of staff.',memo:'',pronunciation:'• <b>TDL法則</b>: "limited" → Tが母音挟まれ → 「リミ<u>レ</u>ッド」<br>• <b>子から母</b>: "number of" → R+O → 「ナンバー<u>オブ</u>」<br>• <b>TDL法則</b>: "proprietary" → Tが母音挟まれ → 「プロプライエ<u>レ</u>リー」'},
+  {id:'i16',date:'2025-11-18',jp:'我々は訪れました、協業が発表されたApplied Intuitionを。',en:'We visited Applied Intuition, with whom a collaboration was announced.',memo:'',pronunciation:'• <b>TDL法則</b>: "visited" → Tが母音挟まれ → 「ヴィジ<u>レ</u>ッド」<br>• <b>NがT飲み込む</b>: "Intuition" → N+T → 「<u>イニュ</u>ーション」（Tが消える）<br>• <b>子から母</b>: "was announced" → Z+A → 「<u>ワザナ</u>ウンスト」'},
+  {id:'i17',date:'2025-11-18',jp:'私たちはマーケットで目立つために、異なる（方向性の違う）戦略を採用しました。',en:'We adopted a divergent strategy to stand out in the market.',memo:'',pronunciation:'• <b>TDL+子から母</b>: "adopted a" → Dが母音挟まれ+A連結 → 「アドプ<u>レダ</u>」<br>• <b>子から母</b>: "stand out" → D+O → 「スタン<u>ダウ</u>(t)」<br>• <b>TDL法則</b>: "out in" → Tが母音挟まれ → 「アウ<u>リ</u>ン」<br>• <b>TDL法則</b>: "strategy" → Tが母音挟まれ → 「ストラ<u>レ</u>ジー」'},
+  {id:'i18',date:'2025-11-18',jp:'体積を計算するために、長さに幅、深さをかけなさい',en:'To calculate the volume, multiply the length by the width and depth.',memo:'',pronunciation:'• <b>Lの洗脳</b>: "volume" → 母音後のL → 「ヴァ<u>ゥ</u>ューム」<br>• <b>TDL法則</b>: "multiply" → Tが母音挟まれ → 「マ<u>ゥリ</u>プライ」<br>• <b>双子の法則</b>: "and depth" → D+D連続 → 「<u>アンデップ</u>」'},
+  {id:'i19',date:'2025-11-18',jp:'どうなるか予想がつかない（番狂わせが起きる）',en:"It's unpredictable (anything can happen). All bets are off.",memo:'',pronunciation:'• <b>Lの洗脳</b>: "All" → 末尾L → 「オ<u>ゥ</u>」<br>• <b>子から母</b>: "bets are off" → S+A, R+O連続 → 「ベッ<u>ツアーオフ</u>」<br>• <b>TDL法則</b>: "unpredictable" → Tが母音挟まれ → 「アンプリ<u>リ</u>クタブル」'},
+  {id:'i20',date:'2025-11-18',jp:'AIの人々は金を使っています、思う存分（好きなだけ）',en:"AI people are spending money like there's no tomorrow. (like it's going out of style)",memo:'',pronunciation:'• <b>Lの洗脳+子から母</b>: "people are" → 末尾L+次が母音でラ行復活 → 「ピーポー<u>ラー</u>」<br>• <b>タケコプター+子から母</b>: "going out" → G消え+N+O → 「ゴーイ<u>ナウ</u>(t)」<br>• <b>TDL+子から母</b>: "out of" → Tが母音挟まれ+連結 → 「アウ<u>ラブ</u>」'},
+  {id:'i21',date:'2025-11-18',jp:'インフレ率は下がり、横ばいになっているようだ。',en:'The inflation rate seems to have dropped and leveled off.',memo:'',pronunciation:'• <b>H隠れんぼ</b>: "to have" → haveのH消え → 「トゥ<u>アヴ</u>」<br>• <b>双子の法則</b>: "dropped and" → D+A連結 → 「ドロッ<u>プタン</u>」<br>• <b>子から母</b>: "leveled off" → D+O → 「レヴェル<u>ドオフ</u>」'},
+  {id:'i22',date:'2025-11-18',jp:'政府は経済成長を促す（刺激する）ために、新しい政策を導入した',en:'The government introduced new policies to stimulate(spur) economic growth.',memo:'',pronunciation:'• <b>NがT飲み込む</b>: "introduced" → N+T → 「イ<u>(t)</u>ロデュースト」（Tが弱まる/消える）<br>• <b>TDL法則</b>: "stimulate" → Tが母音挟まれ → 「スティミュ<u>レ</u>イト」<br>• <b>TDL+子から母</b>: "stimulate economic" → 連続 → 「スティミュ<u>レイリ</u>コノミック」'},
+  {id:'i23',date:'2025-11-18',jp:'その指数は上昇して横ばいになった、しかし下がってはいない。',en:"The index has risen and leveled off, but hasn't declined.",memo:'',pronunciation:'• <b>H隠れんぼ+子から母</b>: "index has" → hasのH消え+連結 → 「インデッ<u>クサズ</u>」<br>• <b>H隠れんぼ</b>: "but hasn\'t" → hasn\'tのH消え → 「バッ<u>t\'アズン(t)</u>」<br>• <b>子から母</b>: "risen and" → N+A → 「リズ<u>ナン</u>」<br>• <b>子から母</b>: "leveled off" → D+O → 「レヴェル<u>ドオフ</u>」'},
+  {id:'i24',date:'2026-04-01',jp:'その数が多ければ多い程、次のプロセスにとってはより良いことだ。',en:'The more the number, the better for the next process.',memo:'',pronunciation:'• <b>TDL法則</b>: "the better" → Tが母音挟まれ → 「ザ <u>ベレ</u>ー」<br>• <b>タケコプター</b>: "next" → 末尾T弱まる → 「ネクス<u>(t)</u>」<br>• <b>子から母</b>: "for the next" → R+TH (consonant) 弱リンク'},
+  {id:'i25',date:'2026-04-01',jp:'このポジションでは、どの程度の経験が求められるだろうか。',en:'What level of experience is required for this position?',memo:'',pronunciation:'• <b>TDL法則</b>: "What level" → Tの後にL(半母音扱い) → 「<u>ワレ</u>ヴェル」<br>• <b>子から母連続</b>: "level of experience" → L+O, V+E → 「レヴェ<u>ロヴェ</u>クスピリエンス」<br>• <b>子から母</b>: "experience is" → S+I → 「エクスピリエン<u>シズ</u>」'},
+  {id:'i26',date:'2026-04-01',jp:'私は以前のアプリケーションを手本にしました。',en:'I modeled it after the previous application.',memo:'',pronunciation:'• <b>TDL+子から母</b>: "modeled it" → Dが母音挟まれ+連結 → 「モ<u>レリ</u>ッ(t)」<br>• <b>TDL+子から母</b>: "it after" → T+A母音挟まれ+連結 → 「イ<u>ラフ</u>ター」<br>• <b>子から母</b>: "previous application" → S+A → 「プリヴィア<u>サ</u>プリケーション」'},
+  {id:'i27',date:'2026-04-01',jp:'私は急いでいる。',en:"I'm in a rush.",memo:'',pronunciation:'• <b>子から母連続</b>: "I\'m in a" → M+I, N+A連続 → 「<u>アイミナ</u>ラッシュ」'},
+  {id:'i28',date:'2026-04-01',jp:'私は急いでいない。',en:"I'm in no rush.",memo:'',pronunciation:'• <b>双子の法則</b>: "in no" → N+N連続で前のNが消える → 「<u>イノ</u>」<br>• <b>連続連結</b>: "I\'m in no" → 「<u>アイミノ</u>ラッシュ」'},
+  {id:'i29',date:'2026-04-01',jp:'決定するタイミングについて、6月が目安になると思います。',en:'Regarding the timing of the decision, I think June would be a target.',memo:'',pronunciation:'• <b>タケコプター</b>: "think June" → 末尾K弱まる → 「シン<u>(k)</u>ジューン」<br>• <b>タケコプター</b>: "would be" → 末尾D弱まる → 「ウッ<u>(d)</u>ビー」<br>• <b>TDL法則</b>: "target" → Tが母音挟まれ → 「ター<u>レ</u>ッ(t)」<br>• <b>タケコプター</b>: "Regarding/timing" → 末尾G消え'},
+  {id:'i30',date:'2026-04-01',jp:'重たいバックパックを背負って、山頂まで登りました。',en:'I climbed to the summit carrying a heavy backpack.',memo:'',pronunciation:'• <b>双子の法則</b>: "climbed to" → D+T(TとDは仲間) → 「クライム<u>トゥ</u>」<br>• <b>タケコプター</b>: "summit" → 末尾T弱まる → 「サミ<u>(t)</u>」<br>• <b>タケコプター+子から母</b>: "carrying a" → G消え+N+A → 「<u>キャリナ</u>」'},
+  {id:'i31',date:'2026-04-01',jp:'彼は強硬手段をとるしかない',en:'He has no choice but to play hardball.',memo:'',pronunciation:'• <b>双子の法則</b>: "but to" → T+T連続で前のTが消える → 「<u>バトゥ</u>」<br>• <b>Lの洗脳</b>: "hardball" → 末尾L → 「ハードボー<u>ゥ</u>」<br>• <b>H隠れんぼ</b>: "He has" → hasのH消える可 → 「ヒー<u>\'アズ</u>」'},
+  {id:'i32',date:'2026-04-01',jp:'マルガリータの材料を用意しておいて',en:'Get all the margarita stuff ready.',memo:'',pronunciation:'• <b>TDL+子から母</b>: "Get all" → T+A母音挟まれ+連結 → 「<u>ゲローゥ</u>」<br>• <b>TDL法則</b>: "margarita" → Tが母音挟まれ → 「マーガ<u>リ</u>ー<u>ラ</u>」<br>• <b>TDL法則</b>: "ready" → Dが母音挟まれ → 「<u>レ</u>リー」'},
+  {id:'i33',date:'2026-04-01',jp:'彼女がパッキングしている間、偶然エレベーターホールで会いましたが、彼女は無言でした。',en:"While she was packing, I happened to run into her in the elevator hall, but she didn't say anything.",memo:'',pronunciation:'• <b>H隠れんぼ+TDL</b>: "into her" → herのH消え+連結 → 「イン<u>ラ</u>ー」<br>• <b>TDL法則</b>: "elevator" → Tが母音挟まれ → 「エレベイ<u>レ</u>ー」<br>• <b>NがT飲み込む</b>: "didn\'t" → N+T → 「<u>ディン</u>(t)」（Tが消える）<br>• <b>Lの洗脳</b>: "hall" → 末尾L → 「ホー<u>ゥ</u>」<br>• <b>双子の法則</b>: "happened to" → D+T仲間 → 「ハプン<u>トゥ</u>」'},
+  {id:'i34',date:'2026-04-01',jp:'私たちは「派閥の争い」を避けなければならない。',en:'We must avoid "factional fight".',memo:'',pronunciation:'• <b>TDL+子から母</b>: "must avoid" → T+A母音挟まれ+連結 → 「<u>マスダ</u>ヴォイド」<br>• <b>タケコプター</b>: "avoid/fight" → 末尾D/T弱まる'},
 ];
 
 // ═══════════════════════════════════════
@@ -630,6 +708,17 @@ function boot() {
     const sp = localStorage.getItem('eng_phrases');
     phrases = sp ? JSON.parse(sp) : SEED.map(p => ({...p, cnt:0, last:null}));
     if (!sp) save();
+
+    // Migration: update pronunciation from SEED for existing phrases
+    let migrated = false;
+    SEED.forEach(seed => {
+        const existing = phrases.find(p => p.id === seed.id);
+        if (existing && existing.pronunciation !== seed.pronunciation) {
+            existing.pronunciation = seed.pronunciation;
+            migrated = true;
+        }
+    });
+    if (migrated) save();
 
     const today = new Date().toDateString();
     const ss = localStorage.getItem('eng_stats');
@@ -731,6 +820,18 @@ function toggleListenAnswer() {
 function playListen() {
     const p = phrases[listenOrder[listenIdx]];
     speakText(p.en, document.getElementById('l-play-btn'), document.getElementById('l-play-status'));
+}
+
+function toggleRules() {
+    const body = document.getElementById('rules-body');
+    const btn  = document.getElementById('rules-header-btn');
+    if (body.classList.contains('hidden')) {
+        body.classList.remove('hidden');
+        btn.classList.add('open');
+    } else {
+        body.classList.add('hidden');
+        btn.classList.remove('open');
+    }
 }
 
 // ═══════════════════════════════════════
