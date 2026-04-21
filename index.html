@@ -877,7 +877,8 @@ function stopRec() {
     if (webSpeechRec) { try { webSpeechRec.stop(); } catch(e){} webSpeechRec = null; }
     if (mediaRec && mediaRec.state !== 'inactive') mediaRec.stop();
     recState = 'idle';
-    document.getElementById('s-rec-btn').classList.remove('recording');
+    const recBtn = document.getElementById('s-rec-btn');
+    if (recBtn) recBtn.classList.remove('recording');
 }
 
 async function whisper(blob) {
