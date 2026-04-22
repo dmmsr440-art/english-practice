@@ -332,6 +332,64 @@ async function backfillSokkanNumbers(uid) {
     await batch.commit();
 }
 
+// --- ダッシュボード用：日次チェック範囲取得・カウント ---
+
+// YYYY-MM-DD形式のキーを加減算
+export function addDaysKey(dateKey, days) {
+    const d = new Date(dateKey + "T00:00:00");
+    d.setDate(d.getDate() + days);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+}
+
+// 日次チェックを期間指定で取得（全件を取って期間フィルタ、小規模想定）
+export async function listDailyChecks(fromKey, toKey) {
+    const uid = getUid();
+    if (!uid) return [];
+    const snap = await getDocs(collection(db, "users", uid, "dailyChecks"));
+    const rows = [];
+    snap.forEach(d => {
+        const key = d.id;
+        if (key >= fromKey && key <= toKey) {
+            rows.push({ dateKey: key, ...DEFAULT_CHECKS, ...d.data() });
+        }
+    });
+    rows.sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+    return rows;
+}
+
+export async function countSokkanExamples() {
+    const uid = getUid();
+    if (!uid) return 0;
+    const snap = await getDocs(sokkanColRef(uid));
+    return snap.size;
+}
+
+export async function countChunks() {
+    const uid = getUid();
+    if (!uid) return 0;
+    const snap = await getDocs(chunkColRef(uid));
+    return snap.size;
+}
+
+// 週次メモの保存・取得（key: YYYY-Www 形式、例: 2026-W17）
+export async function saveWeeklyNote(weekKey, text) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const ref = doc(db, "users", uid, "weeklyNotes", weekKey);
+    await setDoc(ref, { text, updatedAt: serverTimestamp() }, { merge: true });
+}
+
+export async function getWeeklyNote(weekKey) {
+    const uid = getUid();
+    if (!uid) return "";
+    const ref = doc(db, "users", uid, "weeklyNotes", weekKey);
+    const snap = await getDoc(ref);
+    return snap.exists() ? (snap.data().text || "") : "";
+}
+
 // --- チャンク学習（chunks）操作 ---
 
 function chunkColRef(uid) {

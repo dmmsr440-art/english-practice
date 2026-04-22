@@ -17,6 +17,7 @@ import { initChunkListScreen } from "./screens/chunk-list.js";
 import { initChunkPracticeScreen } from "./screens/chunk-practice.js";
 import { initChunkQuickAddScreen } from "./screens/chunk-quick-add.js";
 import { initChunkEditScreen } from "./screens/chunk-edit.js";
+import { initDashboardScreen } from "./screens/dashboard.js";
 import { showScreen, showToast } from "./lib/ui.js";
 
 // 起動時処理
@@ -36,6 +37,7 @@ import { showScreen, showToast } from "./lib/ui.js";
     initChunkPracticeScreen();
     initChunkQuickAddScreen();
     initChunkEditScreen();
+    initDashboardScreen();
 
     // 認証状態の変化を監視
     onAuthChange(async (user) => {

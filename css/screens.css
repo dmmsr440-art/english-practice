@@ -1037,3 +1037,235 @@
 .flashcard-meta:empty {
     display: none;
 }
+
+/* ===== 進捗ダッシュボード ===== */
+.dashboard-status {
+    font-size: 13px;
+    color: var(--text-2);
+    margin: 8px 0 4px;
+    min-height: 18px;
+}
+
+.dashboard-section {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.dashboard-section h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-1);
+}
+
+.dashboard-range {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 10px;
+}
+
+.week-study-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.week-study-row .label {
+    font-size: 13px;
+    color: var(--text-2);
+    min-width: 70px;
+}
+
+.week-study-row .value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-1);
+    min-width: 64px;
+    text-align: right;
+}
+
+.week-study-bar-wrap {
+    flex: 1;
+    height: 10px;
+    background: #eef2f7;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.week-study-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3B82F6, #60A5FA);
+    transition: width 0.4s ease;
+}
+
+.week-method-heading {
+    font-size: 13px;
+    color: var(--text-2);
+    margin: 8px 0 6px;
+}
+
+.method-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.method-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+}
+
+.method-label {
+    flex: 0 0 90px;
+    color: var(--text-1);
+}
+
+.method-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: #eef2f7;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.method-bar {
+    height: 100%;
+    background: #3B82F6;
+    transition: width 0.4s ease;
+}
+
+.method-count {
+    flex: 0 0 44px;
+    text-align: right;
+    color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+}
+
+.chart-wrap {
+    position: relative;
+    height: 200px;
+}
+
+.weekly-note-section textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.weekly-note-section .btn {
+    margin-top: 8px;
+}
+
+.milestone-head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.milestone-name-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-1);
+}
+
+.milestone-due-text {
+    font-size: 12px;
+    color: var(--text-2);
+}
+
+.milestone-remaining-text {
+    font-size: 12px;
+    color: #3B82F6;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.milestone-progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.milestone-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.milestone-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+
+.milestone-label {
+    color: var(--text-1);
+}
+
+.milestone-num {
+    color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+}
+
+.milestone-bar-wrap {
+    height: 8px;
+    background: #eef2f7;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.milestone-bar {
+    height: 100%;
+    background: #3B82F6;
+    transition: width 0.4s ease;
+}
+
+.milestone-row.reached .milestone-bar {
+    background: #10B981;
+}
+
+.milestone-row.reached .milestone-num {
+    color: #10B981;
+    font-weight: 600;
+}
+
+.totals-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.total-card {
+    background: var(--bg, #f9fafb);
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+}
+
+.total-label {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 4px;
+}
+
+.total-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-1);
+    font-variant-numeric: tabular-nums;
+}

@@ -9,6 +9,7 @@ import { initDailyCheck } from "../components/daily-check.js";
 import { showScreen, showModal, hideModal, showToast } from "../lib/ui.js";
 import { openSokkanList } from "./sokkan-list.js";
 import { openChunkList } from "./chunk-list.js";
+import { openDashboard } from "./dashboard.js";
 
 let profileCache = null;
 let homeInitialized = false;
@@ -70,13 +71,16 @@ function handleModuleClick(moduleName) {
         openChunkList();
         return;
     }
+    if (moduleName === "dashboard") {
+        openDashboard();
+        return;
+    }
 
     const names = {
         shadowing: "シャドーイングログ",
         cambly: "Camblyログ",
         listening: "多聴ログ",
-        solo: "独り言ログ",
-        dashboard: "進捗ダッシュボード"
+        solo: "独り言ログ"
     };
     showToast(`${names[moduleName] || "このモジュール"} は Phase 2 以降で実装予定です`, "default", 3000);
 }

@@ -395,6 +395,91 @@
         </main>
     </div>
 
+    <!-- ========== 進捗ダッシュボード ========== -->
+    <div id="screen-dashboard" class="screen">
+        <header class="header">
+            <button id="btn-back-from-dashboard" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">📈 進捗ダッシュボード</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content">
+            <p id="dashboard-status" class="dashboard-status"></p>
+
+            <!-- 今週のサマリー -->
+            <section class="dashboard-section">
+                <h2 class="section-title">📅 今週のサマリー</h2>
+                <p class="dashboard-range" id="week-range"></p>
+
+                <div class="week-study-row">
+                    <span class="week-study-label">学習日数</span>
+                    <span class="week-study-value" id="week-study-days">-</span>
+                </div>
+                <div class="week-study-bar-wrap">
+                    <div class="week-study-bar" id="week-study-days-bar"></div>
+                </div>
+
+                <div class="week-method-heading">メソッド別（今週）</div>
+                <div class="method-list" id="week-method-list"></div>
+
+                <div class="weekly-note-section">
+                    <label class="edit-label" for="input-weekly-note">今週の一言メモ（任意）</label>
+                    <textarea
+                        id="input-weekly-note"
+                        class="settings-textarea"
+                        rows="3"
+                        placeholder="今週の気づき・振り返り"
+                    ></textarea>
+                    <button id="btn-save-weekly-note" class="btn-secondary">メモを保存</button>
+                </div>
+            </section>
+
+            <!-- 推移グラフ -->
+            <section class="dashboard-section">
+                <h2 class="section-title">📊 直近8週の学習日数</h2>
+                <div class="chart-wrap">
+                    <canvas id="trend-chart"></canvas>
+                </div>
+            </section>
+
+            <!-- マイルストーン進捗 -->
+            <section class="dashboard-section">
+                <h2 class="section-title">🏁 マイルストーン進捗</h2>
+                <div class="milestone-head-row">
+                    <div>
+                        <div class="milestone-name-text" id="milestone-name">-</div>
+                        <div class="milestone-due-text">期日：<span id="milestone-due">-</span></div>
+                    </div>
+                    <div class="milestone-remaining-text" id="milestone-remaining">-</div>
+                </div>
+                <div id="milestone-progress-list" class="milestone-progress-list"></div>
+            </section>
+
+            <!-- 累計 -->
+            <section class="dashboard-section">
+                <h2 class="section-title">📚 累計実績（計画開始から）</h2>
+                <div class="totals-grid">
+                    <div class="total-card">
+                        <div class="total-label">学習日数</div>
+                        <div class="total-value" id="total-study-days">-</div>
+                    </div>
+                    <div class="total-card">
+                        <div class="total-label">Cambly</div>
+                        <div class="total-value" id="total-cambly">-</div>
+                    </div>
+                    <div class="total-card">
+                        <div class="total-label">瞬間英作文</div>
+                        <div class="total-value" id="total-sokkan">-</div>
+                    </div>
+                    <div class="total-card">
+                        <div class="total-label">チャンク</div>
+                        <div class="total-value" id="total-chunks">-</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
     <!-- ========== チャンク学習・一覧 ========== -->
     <div id="screen-chunk-list" class="screen">
         <header class="header">
@@ -653,6 +738,8 @@
     <!-- ========== スクリプト ========== -->
     <!-- SheetJS（Excelインポート用・遅延読込） -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.20.3/dist/xlsx.full.min.js" defer></script>
+    <!-- Chart.js（ダッシュボード用・遅延読込） -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
     <script type="module" src="./js/main.js"></script>
 </body>
 </html>
