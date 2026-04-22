@@ -94,6 +94,20 @@ export async function markWhyViewed() {
     await updateDoc(ref, { lastWhyViewedAt: serverTimestamp() });
 }
 
+// --- Gemini APIキー ---
+
+export async function saveGeminiApiKey(key) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const ref = doc(db, "users", uid, "meta", "profile");
+    await updateDoc(ref, { geminiApiKey: key || "" });
+}
+
+export async function getGeminiApiKey() {
+    const profile = await getProfile();
+    return profile?.geminiApiKey || "";
+}
+
 // --- 日次チェック操作 ---
 
 // 日付をYYYY-MM-DD形式で取得（アメリカ中部時間基準）

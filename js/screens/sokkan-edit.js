@@ -6,6 +6,9 @@
 import { updateSokkanExample, deleteSokkanExample } from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
 import { refreshSokkanList } from "./sokkan-list.js";
+import {
+    generateTranslation, generatePronunciationPoints, hasGeminiApiKey
+} from "../lib/gemini.js";
 
 let initialized = false;
 let currentId = null;
@@ -21,7 +24,65 @@ export function initSokkanEditScreen() {
     document.getElementById("btn-save-edit").addEventListener("click", handleSave);
     document.getElementById("btn-delete-edit").addEventListener("click", handleDelete);
 
+    document.getElementById("btn-ai-translate").addEventListener("click", handleAITranslate);
+    document.getElementById("btn-ai-pronunciation").addEventListener("click", handleAIPronunciation);
+
     initialized = true;
+}
+
+async function handleAITranslate() {
+    if (!hasGeminiApiKey()) {
+        showToast("設定画面でGemini APIキーを登録してください", "error", 3500);
+        return;
+    }
+    const ja = document.getElementById("input-edit-ja").value.trim();
+    if (!ja) {
+        showToast("日本語を入力してください", "error");
+        return;
+    }
+    const btn = document.getElementById("btn-ai-translate");
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "生成中…";
+    try {
+        const en = await generateTranslation(ja);
+        document.getElementById("input-edit-en").value = en;
+        showToast("英訳を生成しました", "success");
+    } catch (err) {
+        console.error(err);
+        showToast(err.message || "AI生成に失敗しました", "error", 4000);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+    }
+}
+
+async function handleAIPronunciation() {
+    if (!hasGeminiApiKey()) {
+        showToast("設定画面でGemini APIキーを登録してください", "error", 3500);
+        return;
+    }
+    const en = document.getElementById("input-edit-en").value.trim();
+    const ja = document.getElementById("input-edit-ja").value.trim();
+    if (!en) {
+        showToast("先に英訳を入力・生成してください", "error");
+        return;
+    }
+    const btn = document.getElementById("btn-ai-pronunciation");
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "生成中…";
+    try {
+        const pron = await generatePronunciationPoints(en, ja);
+        document.getElementById("input-edit-pron").value = pron;
+        showToast("発音ポイントを生成しました", "success");
+    } catch (err) {
+        console.error(err);
+        showToast(err.message || "AI生成に失敗しました", "error", 4000);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+    }
 }
 
 export function openSokkanEdit(example) {

@@ -1,7 +1,7 @@
 // Service Worker
 // Phase 0 では最低限のキャッシュのみ。Phase 4 で本格的なオフライン対応を実装。
 
-const CACHE_NAME = "english-practice-v1.2";
+const CACHE_NAME = "english-practice-v1.3";
 const CORE_ASSETS = [
     "./",
     "./index.html",

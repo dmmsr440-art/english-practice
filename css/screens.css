@@ -717,3 +717,68 @@
 .btn-danger:hover {
     background: #FEF2F2;
 }
+
+/* ========== Gemini APIキー入力 ========== */
+.gemini-key-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.gemini-reveal {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-2);
+    cursor: pointer;
+}
+
+#gemini-key-status {
+    margin-top: 8px;
+    min-height: 18px;
+}
+
+.settings-hint a {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+/* ========== 編集画面・AI生成ボタン ========== */
+.edit-field-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    margin-top: 8px;
+}
+
+.edit-field-head .edit-label {
+    margin: 0;
+}
+
+.btn-ai {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+    background: var(--primary-light);
+    border: 1px solid transparent;
+    padding: 4px 10px;
+    border-radius: 999px;
+    transition: background 0.2s, border-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-ai:hover:not(:disabled) {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-ai:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

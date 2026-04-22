@@ -166,6 +166,29 @@
                 <button id="btn-save-goal" class="btn-primary">Goalを保存</button>
             </section>
 
+            <!-- Gemini API -->
+            <section class="settings-section">
+                <h2 class="section-title">🤖 Gemini API</h2>
+                <p class="settings-hint">
+                    瞬間英作文の英訳・発音ポイントのAI生成に使用します。<br>
+                    <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> でAPIキーを取得してください。
+                </p>
+                <input
+                    type="password"
+                    id="input-gemini-key"
+                    class="sokkan-search-input"
+                    placeholder="AIza..."
+                    autocomplete="off"
+                />
+                <div class="gemini-key-actions">
+                    <label class="gemini-reveal">
+                        <input type="checkbox" id="chk-reveal-gemini-key"> 表示
+                    </label>
+                    <button id="btn-save-gemini-key" class="btn-primary">保存</button>
+                </div>
+                <p class="settings-hint" id="gemini-key-status"></p>
+            </section>
+
             <!-- アプリ情報 -->
             <section class="settings-section settings-section-subtle">
                 <h2 class="section-title">ℹ️ アプリ情報</h2>
@@ -327,7 +350,10 @@
                     placeholder="日本語"
                 ></textarea>
 
-                <label class="edit-label">英訳</label>
+                <div class="edit-field-head">
+                    <label class="edit-label">英訳</label>
+                    <button id="btn-ai-translate" class="btn-ai" type="button">🤖 AI生成</button>
+                </div>
                 <textarea
                     id="input-edit-en"
                     class="settings-textarea"
@@ -335,7 +361,10 @@
                     placeholder="English translation"
                 ></textarea>
 
-                <label class="edit-label">発音ポイント</label>
+                <div class="edit-field-head">
+                    <label class="edit-label">発音ポイント</label>
+                    <button id="btn-ai-pronunciation" class="btn-ai" type="button">🤖 AI生成</button>
+                </div>
                 <textarea
                     id="input-edit-pron"
                     class="settings-textarea"

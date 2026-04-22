@@ -5,11 +5,13 @@
 // - ログアウト
 
 import {
-    getProfile, saveWhyStatement, saveGoalStatement
+    getProfile, saveWhyStatement, saveGoalStatement,
+    saveGeminiApiKey
 } from "../lib/storage.js";
 import { signOutUser, auth } from "../lib/firebase.js";
 import { showScreen, showToast } from "../lib/ui.js";
 import { refreshWhyText } from "../components/why-toggle.js";
+import { setGeminiApiKey } from "../lib/gemini.js";
 
 let settingsInitialized = false;
 
@@ -71,6 +73,27 @@ export function initSettingsScreen() {
         await loadSettingsData();
     });
 
+    // Gemini APIキー：表示切替
+    document.getElementById("chk-reveal-gemini-key").addEventListener("change", (evt) => {
+        const input = document.getElementById("input-gemini-key");
+        input.type = evt.target.checked ? "text" : "password";
+    });
+
+    // Gemini APIキー：保存
+    document.getElementById("btn-save-gemini-key").addEventListener("click", async () => {
+        const key = document.getElementById("input-gemini-key").value.trim();
+        const statusEl = document.getElementById("gemini-key-status");
+        try {
+            await saveGeminiApiKey(key);
+            setGeminiApiKey(key);
+            statusEl.textContent = key ? "✓ APIキーを保存しました" : "APIキーを削除しました";
+            showToast(key ? "APIキーを保存しました" : "APIキーを削除しました", "success");
+        } catch (err) {
+            console.error(err);
+            showToast("保存に失敗しました", "error");
+        }
+    });
+
     settingsInitialized = true;
 }
 
@@ -82,4 +105,11 @@ export async function loadSettingsData() {
         auth.currentUser?.email || profile.email || "-";
     document.getElementById("input-why-statement").value = profile.whyStatement || "";
     document.getElementById("input-goal-statement").value = profile.goalStatement || "";
+
+    const geminiInput = document.getElementById("input-gemini-key");
+    const geminiStatus = document.getElementById("gemini-key-status");
+    const key = profile.geminiApiKey || "";
+    geminiInput.value = key;
+    setGeminiApiKey(key);
+    geminiStatus.textContent = key ? "✓ 登録済み" : "未設定";
 }
