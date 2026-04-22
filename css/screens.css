@@ -782,3 +782,135 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+/* ========== インポート画面 ========== */
+.btn-import-link {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text-2);
+    text-align: center;
+    padding: 8px;
+}
+
+.import-section {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+
+.import-hint {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.7;
+    margin-bottom: 12px;
+}
+
+.import-hint-cols {
+    background: var(--bg);
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    margin-bottom: 16px;
+}
+
+.import-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.import-file-label {
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.import-selected {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-2);
+    text-align: center;
+    min-height: 18px;
+}
+
+.import-summary {
+    font-size: 13px;
+    color: var(--text-2);
+    margin-bottom: 10px;
+}
+
+.import-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+}
+
+.import-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.import-table th,
+.import-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.import-table th {
+    background: var(--bg);
+    font-weight: 700;
+    color: var(--text-2);
+    position: sticky;
+    top: 0;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+}
+
+.import-table tr.row-skip td {
+    color: var(--text-3);
+    background: #FEF2F2;
+}
+
+.import-ai-toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.5;
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+.import-ai-toggle input {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.import-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.import-progress {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-2);
+    min-height: 20px;
+}

@@ -12,6 +12,7 @@ import { initSokkanListScreen } from "./screens/sokkan-list.js";
 import { initSokkanPracticeScreen } from "./screens/sokkan-practice.js";
 import { initSokkanQuickAddScreen } from "./screens/sokkan-quick-add.js";
 import { initSokkanEditScreen } from "./screens/sokkan-edit.js";
+import { initSokkanImportScreen } from "./screens/sokkan-import.js";
 import { showScreen, showToast } from "./lib/ui.js";
 
 // 起動時処理
@@ -26,6 +27,7 @@ import { showScreen, showToast } from "./lib/ui.js";
     initSokkanPracticeScreen();
     initSokkanQuickAddScreen();
     initSokkanEditScreen();
+    initSokkanImportScreen();
 
     // 認証状態の変化を監視
     onAuthChange(async (user) => {

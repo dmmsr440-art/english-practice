@@ -221,6 +221,9 @@
                 <button id="btn-start-practice-flag" class="btn-secondary btn-block">
                     🚩 フラグ付きだけで練習
                 </button>
+                <button id="btn-open-import" class="btn-text btn-import-link">
+                    📥 Excel/CSVから一括インポート
+                </button>
             </section>
 
             <!-- 検索・絞り込み -->
@@ -392,6 +395,55 @@
         </main>
     </div>
 
+    <!-- ========== 瞬間英作文・インポート ========== -->
+    <div id="screen-sokkan-import" class="screen">
+        <header class="header">
+            <button id="btn-back-from-import" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">📥 一括インポート</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content">
+            <section class="import-section">
+                <p class="import-hint">
+                    Excel (.xlsx) または CSV ファイルを選択してください。<br>
+                    1行目は見出し行として扱われます。
+                </p>
+                <p class="import-hint import-hint-cols">
+                    対応列名（どちらかがマッチすればOK）：<br>
+                    • <b>日本語</b> / ja / Japanese（必須）<br>
+                    • <b>英訳</b> / en / English（任意）<br>
+                    • <b>発音</b> / pronunciation（任意）<br>
+                    • <b>カテゴリ</b> / category（任意）
+                </p>
+
+                <input type="file" id="input-import-file" accept=".xlsx,.xls,.csv" class="import-file-input" />
+                <label for="input-import-file" class="btn-secondary btn-block import-file-label">
+                    📂 ファイルを選択
+                </label>
+                <p class="import-selected" id="import-selected"></p>
+            </section>
+
+            <section class="import-section" id="import-preview-section" hidden>
+                <h2 class="section-title">プレビュー</h2>
+                <p class="import-summary" id="import-summary"></p>
+                <div class="import-table-wrap">
+                    <table class="import-table" id="import-table"></table>
+                </div>
+                <label class="import-ai-toggle">
+                    <input type="checkbox" id="chk-import-ai">
+                    <span>英訳が空欄の行はAIで自動生成（APIキー必要・時間がかかる）</span>
+                </label>
+                <div class="import-footer">
+                    <button id="btn-confirm-import" class="btn-primary btn-block">
+                        インポートを実行
+                    </button>
+                    <p class="import-progress" id="import-progress"></p>
+                </div>
+            </section>
+        </main>
+    </div>
+
     <!-- ========== トースト通知 ========== -->
     <div id="toast" class="toast" hidden></div>
 
@@ -406,6 +458,8 @@
     </div>
 
     <!-- ========== スクリプト ========== -->
+    <!-- SheetJS（Excelインポート用・遅延読込） -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.20.3/dist/xlsx.full.min.js" defer></script>
     <script type="module" src="./js/main.js"></script>
 </body>
 </html>

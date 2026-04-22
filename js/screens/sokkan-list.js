@@ -9,6 +9,7 @@ import { showScreen, showToast } from "../lib/ui.js";
 import { startPractice } from "./sokkan-practice.js";
 import { openSokkanQuickAdd } from "./sokkan-quick-add.js";
 import { openSokkanEdit } from "./sokkan-edit.js";
+import { openSokkanImport } from "./sokkan-import.js";
 
 let allExamples = [];
 let currentFilter = "all"; // "all" | "flag"
@@ -30,6 +31,11 @@ export function initSokkanListScreen() {
     // ＋ 新規登録（クイック入力画面へ）
     document.getElementById("btn-open-quick-add").addEventListener("click", () => {
         openSokkanQuickAdd();
+    });
+
+    // 📥 インポート画面へ
+    document.getElementById("btn-open-import").addEventListener("click", () => {
+        openSokkanImport();
     });
 
     // 検索
