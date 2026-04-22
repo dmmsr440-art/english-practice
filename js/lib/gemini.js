@@ -100,6 +100,56 @@ export async function generatePronunciationPoints(en, ja = "") {
     return callGemini(PRONUNCIATION_SYSTEM, prompt, { temperature: 0.3 });
 }
 
+// ---- チャンク：意味プロンプト ----
+const CHUNK_MEANING_SYSTEM = `あなたは英語学習者向けの辞書アシスタントです。
+与えられた英語のチャンク（定型表現・イディオム・コロケーション）の日本語での意味を、
+簡潔かつビジネス・日常どちらでも使えるニュアンスで説明してください。
+
+ルール:
+- 1〜2個の訳語を提示（カンマ区切り可）
+- 長い説明は不要。意味の核を短く。
+- 出力は日本語のみ。前置き・説明・引用符は一切不要。
+
+例:
+入力: get back to you
+出力: 後で返事する、折り返し連絡する
+
+入力: circle back
+出力: 改めて連絡する、後で戻って話す
+
+入力: let's table this
+出力: この件は一旦保留にする、後回しにする`;
+
+// ---- チャンク：例文プロンプト ----
+const CHUNK_EXAMPLE_SYSTEM = `あなたは英語学習者向けの例文作成アシスタントです。
+与えられた英語のチャンクを自然に使った短い例文を1つ作成してください。
+
+ルール:
+- ビジネス・会議の文脈で使える自然な英文
+- 1文のみ、長すぎないこと
+- チャンク自体をそのまま含めること
+- 出力は英文1行のみ。日本語訳・前置き・引用符は一切不要。
+
+例:
+入力: get back to you
+出力: Let me check with my team and get back to you by Friday.
+
+入力: circle back
+出力: Let's circle back on this next week after we have more data.`;
+
+export async function generateChunkMeaning(chunk) {
+    if (!chunk?.trim()) throw new Error("チャンクが空です");
+    return callGemini(CHUNK_MEANING_SYSTEM, chunk.trim(), { temperature: 0.3 });
+}
+
+export async function generateChunkExample(chunk, meaning = "") {
+    if (!chunk?.trim()) throw new Error("チャンクが空です");
+    const prompt = meaning
+        ? `チャンク: ${chunk.trim()}\n（参考：意味は「${meaning.trim()}」）`
+        : `チャンク: ${chunk.trim()}`;
+    return callGemini(CHUNK_EXAMPLE_SYSTEM, prompt, { temperature: 0.5 });
+}
+
 // APIキーの簡易疎通チェック（任意）
 export async function testGeminiKey(key) {
     const prev = cachedApiKey;

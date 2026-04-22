@@ -914,3 +914,126 @@
     color: var(--text-2);
     min-height: 20px;
 }
+
+/* ========== フラッシュカード ========== */
+.flashcard-wrap {
+    perspective: 1200px;
+    padding: 8px 0;
+}
+
+.flashcard {
+    position: relative;
+    width: 100%;
+    min-height: 260px;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+    cursor: pointer;
+}
+
+.flashcard.flipped {
+    transform: rotateY(180deg);
+}
+
+.flashcard-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.flashcard-front {
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.flashcard-chunk {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--text);
+    text-align: center;
+    word-break: break-word;
+}
+
+.flashcard-speak-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    font-size: 22px;
+    padding: 0;
+    min-height: 0;
+}
+
+.flashcard-flip-hint {
+    color: var(--text-3);
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+    overflow-y: auto;
+}
+
+.flashcard-meaning-label,
+.flashcard-example-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.flashcard-meaning {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    background: var(--primary-light);
+    border-radius: var(--radius);
+}
+
+.flashcard-example {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    padding: 12px 14px;
+    background: #F0FDF4;
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+}
+
+.flashcard-example.empty {
+    color: var(--text-3);
+    font-style: italic;
+    background: var(--bg);
+}
+
+.flashcard-speak-mini {
+    padding: 2px 10px;
+    font-size: 11px;
+}
+
+.flashcard-meta {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-top: 4px;
+}
+
+.flashcard-meta:empty {
+    display: none;
+}

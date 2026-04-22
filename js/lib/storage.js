@@ -332,6 +332,86 @@ async function backfillSokkanNumbers(uid) {
     await batch.commit();
 }
 
+// --- チャンク学習（chunks）操作 ---
+
+function chunkColRef(uid) {
+    return collection(db, "users", uid, "chunks");
+}
+
+export async function listChunks() {
+    const uid = getUid();
+    if (!uid) return [];
+    const snap = await getDocs(chunkColRef(uid));
+    const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    rows.sort((a, b) => {
+        const na = typeof a.number === "number" ? a.number : Infinity;
+        const nb = typeof b.number === "number" ? b.number : Infinity;
+        if (na !== nb) return na - nb;
+        const ta = a.createdAt?.toMillis?.() || 0;
+        const tb = b.createdAt?.toMillis?.() || 0;
+        return ta - tb;
+    });
+    return rows;
+}
+
+async function getNextChunkNumber(uid) {
+    const snap = await getDocs(chunkColRef(uid));
+    let maxNum = 0;
+    snap.forEach(d => {
+        const n = d.data().number;
+        if (typeof n === "number" && n > maxNum) maxNum = n;
+    });
+    return maxNum + 1;
+}
+
+export async function addChunk(data) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const number = await getNextChunkNumber(uid);
+    const payload = {
+        chunk: data.chunk || "",
+        meaning: data.meaning || "",
+        example: data.example || "",
+        source: data.source || "",
+        scene: data.scene || "",
+        flag: !!data.flag,
+        number,
+        practiceCount: 0,
+        lastPracticedAt: null,
+        createdAt: serverTimestamp()
+    };
+    const ref = await addDoc(chunkColRef(uid), payload);
+    return ref.id;
+}
+
+export async function updateChunk(id, patch) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const ref = doc(db, "users", uid, "chunks", id);
+    await updateDoc(ref, patch);
+}
+
+export async function toggleChunkFlag(id, flag) {
+    return updateChunk(id, { flag: !!flag });
+}
+
+export async function recordChunkPractice(id) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const ref = doc(db, "users", uid, "chunks", id);
+    await updateDoc(ref, {
+        practiceCount: increment(1),
+        lastPracticedAt: serverTimestamp()
+    });
+}
+
+export async function deleteChunk(id) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const ref = doc(db, "users", uid, "chunks", id);
+    await deleteDoc(ref);
+}
+
 // --- デフォルト値 ---
 
 export const DEFAULT_WHY = `今の私は、悔しい。

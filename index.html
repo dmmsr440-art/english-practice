@@ -395,6 +395,199 @@
         </main>
     </div>
 
+    <!-- ========== チャンク学習・一覧 ========== -->
+    <div id="screen-chunk-list" class="screen">
+        <header class="header">
+            <button id="btn-back-from-chunk-list" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">🧩 チャンク学習</h1>
+            <button id="btn-open-chunk-quick-add" class="header-btn" aria-label="新規登録">＋</button>
+        </header>
+
+        <main class="main-content">
+            <section class="sokkan-practice-launch">
+                <button id="btn-start-chunk-practice-normal" class="btn-primary btn-block">
+                    ▶︎ フラッシュカード練習
+                </button>
+                <button id="btn-start-chunk-practice-flag" class="btn-secondary btn-block">
+                    🚩 フラグ付きだけで練習
+                </button>
+            </section>
+
+            <section class="sokkan-filters">
+                <input
+                    type="text"
+                    id="chunk-search"
+                    class="sokkan-search-input"
+                    placeholder="🔍 チャンク・意味で検索"
+                />
+                <div id="chunk-filter-tabs" class="sokkan-filter-tabs">
+                    <button class="filter-tab active" data-filter="all">全て</button>
+                    <button class="filter-tab" data-filter="flag">🚩 フラグ</button>
+                </div>
+            </section>
+
+            <section class="sokkan-list-section">
+                <p class="sokkan-count" id="chunk-count"></p>
+                <ul id="chunk-list" class="sokkan-list"></ul>
+                <p id="chunk-empty" class="sokkan-empty" hidden>
+                    該当するチャンクがありません。<br>
+                    「＋」ボタンから登録してください。
+                </p>
+            </section>
+        </main>
+    </div>
+
+    <!-- ========== チャンク学習・フラッシュカード ========== -->
+    <div id="screen-chunk-practice" class="screen">
+        <header class="header">
+            <button id="btn-back-from-chunk-practice" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title" id="chunk-practice-title">練習中</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content practice-main">
+            <div class="practice-progress" id="chunk-practice-progress"></div>
+
+            <div class="flashcard-wrap">
+                <div id="flashcard" class="flashcard">
+                    <div class="flashcard-face flashcard-front">
+                        <p id="flashcard-chunk" class="flashcard-chunk"></p>
+                        <button id="btn-chunk-speak" class="btn-secondary flashcard-speak-btn">
+                            🔊
+                        </button>
+                        <p id="flashcard-flip-hint" class="flashcard-flip-hint">タップでめくる</p>
+                    </div>
+                    <div class="flashcard-face flashcard-back">
+                        <div class="flashcard-meaning-label">意味</div>
+                        <p id="flashcard-meaning" class="flashcard-meaning"></p>
+                        <div class="flashcard-example-label">
+                            例文
+                            <button id="btn-chunk-speak-example" class="btn-ai flashcard-speak-mini" type="button">🔊</button>
+                        </div>
+                        <p id="flashcard-example" class="flashcard-example"></p>
+                        <p id="flashcard-source" class="flashcard-meta"></p>
+                        <p id="flashcard-scene" class="flashcard-meta"></p>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-chunk-toggle-flag" class="btn-flag">
+                <span id="chunk-flag-icon">🏳️</span>
+                <span id="chunk-flag-text">フラグを付ける</span>
+            </button>
+
+            <div class="practice-footer chunk-practice-footer">
+                <button id="btn-chunk-prev" class="btn-secondary">← 前へ</button>
+                <button id="btn-chunk-next" class="btn-primary">次のカード →</button>
+            </div>
+
+            <p id="chunk-practice-empty" class="practice-empty" hidden>
+                該当するチャンクがありません。
+            </p>
+        </main>
+    </div>
+
+    <!-- ========== チャンク学習・クイック入力 ========== -->
+    <div id="screen-chunk-quick-add" class="screen">
+        <header class="header">
+            <button id="btn-back-from-chunk-quick-add" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">⚡ クイック入力</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content">
+            <section class="quick-add-section">
+                <p class="quick-add-hint">
+                    会議で聞いた英語チャンクを即メモ。<br>
+                    意味・例文はAI生成または編集画面で追加できます。
+                </p>
+                <textarea
+                    id="input-chunk-quick"
+                    class="settings-textarea quick-add-textarea"
+                    rows="3"
+                    placeholder="英語チャンク（例：get back to you）"
+                ></textarea>
+                <button id="btn-save-chunk-quick" class="btn-primary btn-block">
+                    ＋ 追加する
+                </button>
+                <p class="quick-add-note" id="chunk-quick-note"></p>
+            </section>
+        </main>
+    </div>
+
+    <!-- ========== チャンク学習・編集 ========== -->
+    <div id="screen-chunk-edit" class="screen">
+        <header class="header">
+            <button id="btn-back-from-chunk-edit" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">チャンクを編集</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content">
+            <section class="edit-section">
+                <div class="edit-number-row">
+                    <span class="settings-label">通しナンバー</span>
+                    <span class="settings-value" id="chunk-edit-number">-</span>
+                </div>
+
+                <label class="edit-label">チャンク <span class="edit-required">*</span></label>
+                <textarea
+                    id="input-chunk-text"
+                    class="settings-textarea"
+                    rows="2"
+                    placeholder="英語チャンク"
+                ></textarea>
+
+                <div class="edit-field-head">
+                    <label class="edit-label">意味</label>
+                    <button id="btn-ai-chunk-meaning" class="btn-ai" type="button">🤖 AI生成</button>
+                </div>
+                <textarea
+                    id="input-chunk-meaning"
+                    class="settings-textarea"
+                    rows="2"
+                    placeholder="日本語での意味"
+                ></textarea>
+
+                <div class="edit-field-head">
+                    <label class="edit-label">例文</label>
+                    <button id="btn-ai-chunk-example" class="btn-ai" type="button">🤖 AI生成</button>
+                </div>
+                <textarea
+                    id="input-chunk-example"
+                    class="settings-textarea"
+                    rows="3"
+                    placeholder="例文（英語）"
+                ></textarea>
+
+                <label class="edit-label">出典</label>
+                <input
+                    type="text"
+                    id="input-chunk-source"
+                    class="sokkan-search-input"
+                    placeholder="例：会議 / Cambly / シャドーイング"
+                />
+
+                <label class="edit-label">使いたい場面</label>
+                <input
+                    type="text"
+                    id="input-chunk-scene"
+                    class="sokkan-search-input"
+                    placeholder="例：顧客への返信 / 議論の切り返し"
+                />
+
+                <div class="edit-footer">
+                    <button id="btn-save-chunk-edit" class="btn-primary btn-block">
+                        保存する
+                    </button>
+                    <button id="btn-delete-chunk-edit" class="btn-danger btn-block">
+                        🗑 このチャンクを削除
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
     <!-- ========== 瞬間英作文・インポート ========== -->
     <div id="screen-sokkan-import" class="screen">
         <header class="header">

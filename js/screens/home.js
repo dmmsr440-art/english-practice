@@ -8,6 +8,7 @@ import { initWhyToggle, isWhyViewedTodayFlag, openWhy, isWhyOpen } from "../comp
 import { initDailyCheck } from "../components/daily-check.js";
 import { showScreen, showModal, hideModal, showToast } from "../lib/ui.js";
 import { openSokkanList } from "./sokkan-list.js";
+import { openChunkList } from "./chunk-list.js";
 
 let profileCache = null;
 let homeInitialized = false;
@@ -65,9 +66,12 @@ function handleModuleClick(moduleName) {
         openSokkanList();
         return;
     }
+    if (moduleName === "chunk") {
+        openChunkList();
+        return;
+    }
 
     const names = {
-        chunk: "チャンク学習",
         shadowing: "シャドーイングログ",
         cambly: "Camblyログ",
         listening: "多聴ログ",
