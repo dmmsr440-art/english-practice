@@ -17,12 +17,16 @@ import {
     getDoc,
     setDoc,
     updateDoc,
+    deleteDoc,
+    addDoc,
     collection,
     query,
     where,
     orderBy,
     limit,
     getDocs,
+    writeBatch,
+    increment,
     serverTimestamp,
     enableIndexedDbPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -88,11 +92,15 @@ export {
     getDoc,
     setDoc,
     updateDoc,
+    deleteDoc,
+    addDoc,
     collection,
     query,
     where,
     orderBy,
     limit,
     getDocs,
+    writeBatch,
+    increment,
     serverTimestamp
 };

@@ -8,6 +8,8 @@ import { ensureProfile } from "./lib/storage.js";
 import { initLoginScreen } from "./screens/login.js";
 import { initHomeScreen } from "./screens/home.js";
 import { initSettingsScreen, loadSettingsData } from "./screens/settings.js";
+import { initSokkanListScreen } from "./screens/sokkan-list.js";
+import { initSokkanPracticeScreen } from "./screens/sokkan-practice.js";
 import { showScreen, showToast } from "./lib/ui.js";
 
 // 起動時処理
@@ -18,6 +20,8 @@ import { showScreen, showToast } from "./lib/ui.js";
     // 画面別の初期化（イベントリスナー登録）
     initLoginScreen();
     initSettingsScreen();
+    initSokkanListScreen();
+    initSokkanPracticeScreen();
 
     // 認証状態の変化を監視
     onAuthChange(async (user) => {

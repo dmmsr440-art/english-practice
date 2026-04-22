@@ -5,9 +5,12 @@
 
 import {
     db, auth,
-    doc, getDoc, setDoc, updateDoc,
+    doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc,
+    collection, query, where, orderBy, getDocs,
+    writeBatch, increment,
     serverTimestamp
 } from "./firebase.js";
+import { SEED_SOKKAN } from "../data/seed-sokkan.js";
 
 // 現在のユーザーIDを取得（未ログインならnull）
 export function getUid() {
@@ -38,11 +41,24 @@ export async function ensureProfile(user) {
             createdAt: serverTimestamp(),
             whyStatement: DEFAULT_WHY,
             goalStatement: DEFAULT_GOAL,
-            lastWhyViewedAt: null
+            lastWhyViewedAt: null,
+            sokkanSeeded: false
         });
-        return (await getDoc(ref)).data();
     }
-    return snap.data();
+
+    // 瞬間英作文の初回シード投入（未実施なら）
+    const profile = (await getDoc(ref)).data();
+    if (!profile.sokkanSeeded) {
+        try {
+            await seedSokkanExamples(uid);
+            await updateDoc(ref, { sokkanSeeded: true });
+            profile.sokkanSeeded = true;
+        } catch (err) {
+            console.warn("瞬間英作文シード失敗（次回再試行）:", err);
+        }
+    }
+
+    return profile;
 }
 
 export async function saveWhyStatement(text) {
@@ -131,6 +147,104 @@ export function isWhyViewedToday(lastWhyViewedAt, timezone = "America/Chicago") 
         year: "numeric", month: "2-digit", day: "2-digit"
     });
     return fmt.format(lastDate) === fmt.format(new Date());
+}
+
+// --- 瞬間英作文（sokkanExamples）操作 ---
+
+function sokkanColRef(uid) {
+    return collection(db, "users", uid, "sokkanExamples");
+}
+
+// 全例文取得（createdAt降順）
+export async function listSokkanExamples() {
+    const uid = getUid();
+    if (!uid) return [];
+    const q = query(sokkanColRef(uid), orderBy("createdAt", "asc"));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+// 例文を1件追加
+export async function addSokkanExample(data) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const payload = {
+        ja: data.ja || "",
+        en: data.en || "",
+        pronunciation: data.pronunciation || "",
+        category: data.category || "",
+        flag: !!data.flag,
+        practiceCount: 0,
+        lastPracticedAt: null,
+        createdAt: serverTimestamp(),
+        ...(data.legacyId ? { legacyId: data.legacyId } : {})
+    };
+    const ref = await addDoc(sokkanColRef(uid), payload);
+    return ref.id;
+}
+
+// 例文更新（部分）
+export async function updateSokkanExample(id, patch) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const ref = doc(db, "users", uid, "sokkanExamples", id);
+    await updateDoc(ref, patch);
+}
+
+// フラグON/OFFトグル
+export async function toggleSokkanFlag(id, flag) {
+    return updateSokkanExample(id, { flag: !!flag });
+}
+
+// 練習回数を1増やし、lastPracticedAtを更新
+export async function recordSokkanPractice(id) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const ref = doc(db, "users", uid, "sokkanExamples", id);
+    await updateDoc(ref, {
+        practiceCount: increment(1),
+        lastPracticedAt: serverTimestamp()
+    });
+}
+
+// 例文削除
+export async function deleteSokkanExample(id) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const ref = doc(db, "users", uid, "sokkanExamples", id);
+    await deleteDoc(ref);
+}
+
+// 初回シード：legacyIdがまだFirestoreに無い分だけを投入
+async function seedSokkanExamples(uid) {
+    // 既存のlegacyIdを取得
+    const existing = await getDocs(sokkanColRef(uid));
+    const existingLegacyIds = new Set();
+    existing.forEach(d => {
+        const v = d.data().legacyId;
+        if (v) existingLegacyIds.add(v);
+    });
+
+    const toSeed = SEED_SOKKAN.filter(s => !existingLegacyIds.has(s.legacyId));
+    if (toSeed.length === 0) return;
+
+    // バッチで投入（500件制限あるが34件なので1バッチで十分）
+    const batch = writeBatch(db);
+    toSeed.forEach(s => {
+        const ref = doc(sokkanColRef(uid)); // auto-ID
+        batch.set(ref, {
+            ja: s.jp,
+            en: s.en,
+            pronunciation: s.pronunciation,
+            category: "",
+            flag: false,
+            practiceCount: 0,
+            lastPracticedAt: null,
+            legacyId: s.legacyId,
+            createdAt: serverTimestamp()
+        });
+    });
+    await batch.commit();
 }
 
 // --- デフォルト値 ---

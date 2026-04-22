@@ -29,6 +29,12 @@
     max-width: 320px;
 }
 
+.btn-block {
+    display: flex;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
 .btn-secondary {
     background: var(--card);
     color: var(--text);

@@ -7,6 +7,7 @@
 import { initWhyToggle, isWhyViewedTodayFlag, openWhy, isWhyOpen } from "../components/why-toggle.js";
 import { initDailyCheck } from "../components/daily-check.js";
 import { showScreen, showModal, hideModal, showToast } from "../lib/ui.js";
+import { openSokkanList } from "./sokkan-list.js";
 
 let profileCache = null;
 let homeInitialized = false;
@@ -60,9 +61,12 @@ function handleModuleClick(moduleName) {
         return;
     }
 
-    // Phase 0では各モジュールは未実装
+    if (moduleName === "sokkan") {
+        openSokkanList();
+        return;
+    }
+
     const names = {
-        sokkan: "瞬間英作文",
         chunk: "チャンク学習",
         shadowing: "シャドーイングログ",
         cambly: "Camblyログ",
@@ -70,5 +74,5 @@ function handleModuleClick(moduleName) {
         solo: "独り言ログ",
         dashboard: "進捗ダッシュボード"
     };
-    showToast(`${names[moduleName] || "このモジュール"} は Phase 1 以降で実装予定です`, "default", 3000);
+    showToast(`${names[moduleName] || "このモジュール"} は Phase 2 以降で実装予定です`, "default", 3000);
 }

@@ -181,6 +181,101 @@
         </main>
     </div>
 
+    <!-- ========== 瞬間英作文・一覧 ========== -->
+    <div id="screen-sokkan-list" class="screen">
+        <header class="header">
+            <button id="btn-back-from-sokkan-list" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">📝 瞬間英作文</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content">
+            <!-- 練習開始ボタン -->
+            <section class="sokkan-practice-launch">
+                <button id="btn-start-practice-normal" class="btn-primary btn-block">
+                    ▶︎ 練習を始める
+                </button>
+                <button id="btn-start-practice-flag" class="btn-secondary btn-block">
+                    🚩 フラグ付きだけで練習
+                </button>
+            </section>
+
+            <!-- 検索・絞り込み -->
+            <section class="sokkan-filters">
+                <input
+                    type="text"
+                    id="sokkan-search"
+                    class="sokkan-search-input"
+                    placeholder="🔍 日本語・英訳で検索"
+                />
+                <div class="sokkan-filter-tabs">
+                    <button class="filter-tab active" data-filter="all">全て</button>
+                    <button class="filter-tab" data-filter="flag">🚩 フラグ</button>
+                </div>
+            </section>
+
+            <!-- 一覧 -->
+            <section class="sokkan-list-section">
+                <p class="sokkan-count" id="sokkan-count"></p>
+                <ul id="sokkan-list" class="sokkan-list"></ul>
+                <p id="sokkan-empty" class="sokkan-empty" hidden>
+                    該当する例文がありません。
+                </p>
+            </section>
+        </main>
+    </div>
+
+    <!-- ========== 瞬間英作文・練習 ========== -->
+    <div id="screen-sokkan-practice" class="screen">
+        <header class="header">
+            <button id="btn-back-from-practice" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title" id="practice-title">練習中</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content practice-main">
+            <div class="practice-progress" id="practice-progress"></div>
+
+            <section class="practice-card">
+                <div class="practice-jp-label">日本語</div>
+                <p class="practice-jp" id="practice-jp"></p>
+
+                <button id="btn-reveal-answer" class="btn-primary btn-block">
+                    回答を見る
+                </button>
+
+                <div id="practice-reveal" hidden>
+                    <div class="practice-en-label">英訳</div>
+                    <p class="practice-en" id="practice-en"></p>
+
+                    <button id="btn-speak" class="btn-secondary btn-block">
+                        🔊 音声再生
+                    </button>
+
+                    <div class="practice-pron-section">
+                        <div class="practice-pron-label">💡 発音ポイント</div>
+                        <div class="practice-pron" id="practice-pron"></div>
+                    </div>
+
+                    <button id="btn-toggle-flag" class="btn-flag">
+                        <span id="flag-icon">🏳️</span>
+                        <span id="flag-text">フラグを付ける</span>
+                    </button>
+                </div>
+            </section>
+
+            <div class="practice-footer">
+                <button id="btn-prev-question" class="btn-secondary">← 前へ</button>
+                <button id="btn-next-question" class="btn-primary">次の問題 →</button>
+            </div>
+
+            <p id="practice-empty" class="practice-empty" hidden>
+                該当する例文がありません。<br>
+                一覧からフラグを付けるか、例文を追加してください。
+            </p>
+        </main>
+    </div>
+
     <!-- ========== トースト通知 ========== -->
     <div id="toast" class="toast" hidden></div>
 
