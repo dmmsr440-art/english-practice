@@ -186,7 +186,7 @@
         <header class="header">
             <button id="btn-back-from-sokkan-list" class="header-btn" aria-label="戻る">←</button>
             <h1 class="header-title">📝 瞬間英作文</h1>
-            <div class="header-spacer"></div>
+            <button id="btn-open-quick-add" class="header-btn" aria-label="新規登録">＋</button>
         </header>
 
         <main class="main-content">
@@ -273,6 +273,93 @@
                 該当する例文がありません。<br>
                 一覧からフラグを付けるか、例文を追加してください。
             </p>
+        </main>
+    </div>
+
+    <!-- ========== 瞬間英作文・クイック入力 ========== -->
+    <div id="screen-sokkan-quick-add" class="screen">
+        <header class="header">
+            <button id="btn-back-from-quick-add" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">⚡ クイック入力</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content">
+            <section class="quick-add-section">
+                <p class="quick-add-hint">
+                    会議中に詰まった日本語を即メモ。<br>
+                    英訳・発音ポイントは後で追加できます。
+                </p>
+                <textarea
+                    id="input-quick-ja"
+                    class="settings-textarea quick-add-textarea"
+                    rows="4"
+                    placeholder="日本語を入力（例：「もう少し具体的に言うと…」）"
+                ></textarea>
+                <button id="btn-save-quick" class="btn-primary btn-block">
+                    ＋ 追加する
+                </button>
+                <p class="quick-add-note" id="quick-add-note"></p>
+            </section>
+        </main>
+    </div>
+
+    <!-- ========== 瞬間英作文・編集 ========== -->
+    <div id="screen-sokkan-edit" class="screen">
+        <header class="header">
+            <button id="btn-back-from-edit" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title" id="edit-title">例文を編集</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content">
+            <section class="edit-section">
+                <div class="edit-number-row">
+                    <span class="settings-label">通しナンバー</span>
+                    <span class="settings-value" id="edit-number">-</span>
+                </div>
+
+                <label class="edit-label">日本語 <span class="edit-required">*</span></label>
+                <textarea
+                    id="input-edit-ja"
+                    class="settings-textarea"
+                    rows="3"
+                    placeholder="日本語"
+                ></textarea>
+
+                <label class="edit-label">英訳</label>
+                <textarea
+                    id="input-edit-en"
+                    class="settings-textarea"
+                    rows="3"
+                    placeholder="English translation"
+                ></textarea>
+
+                <label class="edit-label">発音ポイント</label>
+                <textarea
+                    id="input-edit-pron"
+                    class="settings-textarea"
+                    rows="4"
+                    placeholder="発音のポイント（HTMLタグ可：&lt;b&gt;&lt;u&gt;）"
+                ></textarea>
+
+                <label class="edit-label">カテゴリ</label>
+                <input
+                    type="text"
+                    id="input-edit-category"
+                    class="sokkan-search-input"
+                    placeholder="例：ビジネス / 雑談 / 会議"
+                />
+
+                <div class="edit-footer">
+                    <button id="btn-save-edit" class="btn-primary btn-block">
+                        保存する
+                    </button>
+                    <button id="btn-delete-edit" class="btn-danger btn-block">
+                        🗑 この例文を削除
+                    </button>
+                </div>
+            </section>
         </main>
     </div>
 

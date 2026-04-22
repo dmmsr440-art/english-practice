@@ -7,6 +7,8 @@
 import { listSokkanExamples, toggleSokkanFlag } from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
 import { startPractice } from "./sokkan-practice.js";
+import { openSokkanQuickAdd } from "./sokkan-quick-add.js";
+import { openSokkanEdit } from "./sokkan-edit.js";
 
 let allExamples = [];
 let currentFilter = "all"; // "all" | "flag"
@@ -23,6 +25,11 @@ export function initSokkanListScreen() {
 
     document.getElementById("btn-back-from-sokkan-list").addEventListener("click", () => {
         showScreen("screen-home");
+    });
+
+    // ＋ 新規登録（クイック入力画面へ）
+    document.getElementById("btn-open-quick-add").addEventListener("click", () => {
+        openSokkanQuickAdd();
     });
 
     // 検索
@@ -110,6 +117,9 @@ function render() {
                     <p class="sokkan-item-ja">${escapeHtml(ex.ja)}</p>
                     <p class="sokkan-item-en">${escapeHtml(ex.en || "（英訳未登録）")}</p>
                 </div>
+                <button class="sokkan-item-edit" data-edit-id="${ex.id}" aria-label="編集">
+                    ✏️
+                </button>
             </li>
         `;
     }).join("");
@@ -120,6 +130,16 @@ function render() {
             const id = el.dataset.practiceId;
             const ex = allExamples.find(e => e.id === id);
             if (ex) startPractice({ mode: "single", examples: [ex] });
+        });
+    });
+
+    // 編集アイコン
+    listEl.querySelectorAll("[data-edit-id]").forEach(el => {
+        el.addEventListener("click", (evt) => {
+            evt.stopPropagation();
+            const id = el.dataset.editId;
+            const ex = allExamples.find(x => x.id === id);
+            if (ex) openSokkanEdit(ex);
         });
     });
 
