@@ -83,9 +83,14 @@ function render() {
         single: "1問練習"
     }[currentMode] || "練習中";
     title.textContent = modeLabel;
-    progress.textContent = `${idx + 1} / ${queue.length}問目`;
 
     const cur = queue[idx];
+    const numLabel = typeof cur?.number === "number"
+        ? `#${String(cur.number).padStart(3, "0")}`
+        : "";
+    progress.innerHTML = numLabel
+        ? `<span class="practice-num">${numLabel}</span> ・ ${idx + 1} / ${queue.length}問目`
+        : `${idx + 1} / ${queue.length}問目`;
     document.getElementById("practice-jp").textContent = cur.ja;
     document.getElementById("practice-en").textContent = cur.en || "（英訳未登録）";
     // 発音ポイントはHTMLを含むのでinnerHTML

@@ -42,7 +42,8 @@ export async function ensureProfile(user) {
             whyStatement: DEFAULT_WHY,
             goalStatement: DEFAULT_GOAL,
             lastWhyViewedAt: null,
-            sokkanSeeded: false
+            sokkanSeeded: false,
+            sokkanNumbersBackfilled: false
         });
     }
 
@@ -55,6 +56,17 @@ export async function ensureProfile(user) {
             profile.sokkanSeeded = true;
         } catch (err) {
             console.warn("瞬間英作文シード失敗（次回再試行）:", err);
+        }
+    }
+
+    // 通しナンバーの一回限りバックフィル（既に番号があれば自動でno-op）
+    if (!profile.sokkanNumbersBackfilled) {
+        try {
+            await backfillSokkanNumbers(uid);
+            await updateDoc(ref, { sokkanNumbersBackfilled: true });
+            profile.sokkanNumbersBackfilled = true;
+        } catch (err) {
+            console.warn("通しナンバーのバックフィル失敗（次回再試行）:", err);
         }
     }
 
@@ -155,25 +167,48 @@ function sokkanColRef(uid) {
     return collection(db, "users", uid, "sokkanExamples");
 }
 
-// 全例文取得（createdAt降順）
+// 全例文取得（通しナンバー昇順。未付番は末尾にcreatedAt順で並べる）
 export async function listSokkanExamples() {
     const uid = getUid();
     if (!uid) return [];
-    const q = query(sokkanColRef(uid), orderBy("createdAt", "asc"));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const snap = await getDocs(sokkanColRef(uid));
+    const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    rows.sort((a, b) => {
+        const na = typeof a.number === "number" ? a.number : Infinity;
+        const nb = typeof b.number === "number" ? b.number : Infinity;
+        if (na !== nb) return na - nb;
+        const ta = a.createdAt?.toMillis?.() || 0;
+        const tb = b.createdAt?.toMillis?.() || 0;
+        return ta - tb;
+    });
+    return rows;
 }
 
-// 例文を1件追加
+// 次に使う通しナンバー（現状の最大 +1）
+export async function getNextSokkanNumber() {
+    const uid = getUid();
+    if (!uid) return 1;
+    const snap = await getDocs(sokkanColRef(uid));
+    let maxNum = 0;
+    snap.forEach(d => {
+        const n = d.data().number;
+        if (typeof n === "number" && n > maxNum) maxNum = n;
+    });
+    return maxNum + 1;
+}
+
+// 例文を1件追加（通しナンバーは自動採番：現状の最大+1）
 export async function addSokkanExample(data) {
     const uid = getUid();
     if (!uid) throw new Error("未ログイン");
+    const number = await getNextSokkanNumber();
     const payload = {
         ja: data.ja || "",
         en: data.en || "",
         pronunciation: data.pronunciation || "",
         category: data.category || "",
         flag: !!data.flag,
+        number,
         practiceCount: 0,
         lastPracticedAt: null,
         createdAt: serverTimestamp(),
@@ -216,8 +251,8 @@ export async function deleteSokkanExample(id) {
 }
 
 // 初回シード：legacyIdがまだFirestoreに無い分だけを投入
+// SEED_SOKKAN は i01〜i34 の順。配列index+1 を通しナンバーに使う。
 async function seedSokkanExamples(uid) {
-    // 既存のlegacyIdを取得
     const existing = await getDocs(sokkanColRef(uid));
     const existingLegacyIds = new Set();
     existing.forEach(d => {
@@ -225,24 +260,60 @@ async function seedSokkanExamples(uid) {
         if (v) existingLegacyIds.add(v);
     });
 
-    const toSeed = SEED_SOKKAN.filter(s => !existingLegacyIds.has(s.legacyId));
+    const toSeed = SEED_SOKKAN
+        .map((s, i) => ({ ...s, seedNumber: i + 1 }))
+        .filter(s => !existingLegacyIds.has(s.legacyId));
     if (toSeed.length === 0) return;
 
-    // バッチで投入（500件制限あるが34件なので1バッチで十分）
     const batch = writeBatch(db);
     toSeed.forEach(s => {
-        const ref = doc(sokkanColRef(uid)); // auto-ID
+        const ref = doc(sokkanColRef(uid));
         batch.set(ref, {
             ja: s.jp,
             en: s.en,
             pronunciation: s.pronunciation,
             category: "",
             flag: false,
+            number: s.seedNumber,
             practiceCount: 0,
             lastPracticedAt: null,
             legacyId: s.legacyId,
             createdAt: serverTimestamp()
         });
+    });
+    await batch.commit();
+}
+
+// 通しナンバーが未付与のドキュメントに連番を割り振る（既存データの救済）
+// - 既に number がある docs の最大値を求め、未付与docsに max+1, max+2, ... を付与
+// - 並び順は legacyId 昇順 → createdAt 昇順
+async function backfillSokkanNumbers(uid) {
+    const snap = await getDocs(sokkanColRef(uid));
+    const all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    let maxNum = 0;
+    all.forEach(d => {
+        if (typeof d.number === "number" && d.number > maxNum) maxNum = d.number;
+    });
+
+    const missing = all.filter(d => typeof d.number !== "number");
+    if (missing.length === 0) return;
+
+    missing.sort((a, b) => {
+        const la = a.legacyId || "";
+        const lb = b.legacyId || "";
+        if (la && lb && la !== lb) return la.localeCompare(lb);
+        if (la && !lb) return -1;
+        if (!la && lb) return 1;
+        const ta = a.createdAt?.toMillis?.() || 0;
+        const tb = b.createdAt?.toMillis?.() || 0;
+        return ta - tb;
+    });
+
+    const batch = writeBatch(db);
+    missing.forEach((d, i) => {
+        const ref = doc(db, "users", uid, "sokkanExamples", d.id);
+        batch.update(ref, { number: maxNum + i + 1 });
     });
     await batch.commit();
 }

@@ -91,20 +91,24 @@ function render() {
     }
     emptyEl.hidden = true;
 
-    listEl.innerHTML = filtered.map((ex, idx) => {
+    listEl.innerHTML = filtered.map((ex) => {
         const flagClass = ex.flag ? "flag-on" : "flag-off";
         const flagIcon = ex.flag ? "🚩" : "🏳️";
+        const numLabel = formatNumber(ex.number);
         return `
             <li class="sokkan-item" data-id="${ex.id}">
                 <button class="sokkan-item-flag ${flagClass}" data-flag-id="${ex.id}" aria-label="フラグ切替">
                     ${flagIcon}
                 </button>
                 <div class="sokkan-item-body" data-practice-id="${ex.id}">
+                    <div class="sokkan-item-head">
+                        <span class="sokkan-num">${numLabel}</span>
+                        <span class="sokkan-item-meta">
+                            ${ex.practiceCount ? `練習 ${ex.practiceCount}回` : "未練習"}
+                        </span>
+                    </div>
                     <p class="sokkan-item-ja">${escapeHtml(ex.ja)}</p>
                     <p class="sokkan-item-en">${escapeHtml(ex.en || "（英訳未登録）")}</p>
-                    <div class="sokkan-item-meta">
-                        ${ex.practiceCount ? `練習 ${ex.practiceCount}回` : "未練習"}
-                    </div>
                 </div>
             </li>
         `;
@@ -146,12 +150,22 @@ function applyFilter(examples) {
         result = result.filter(e => e.flag);
     }
     if (currentSearch) {
-        result = result.filter(e =>
-            (e.ja || "").toLowerCase().includes(currentSearch) ||
-            (e.en || "").toLowerCase().includes(currentSearch)
-        );
+        const q = currentSearch;
+        result = result.filter(e => {
+            const numStr = typeof e.number === "number" ? String(e.number).padStart(3, "0") : "";
+            return (
+                (e.ja || "").toLowerCase().includes(q) ||
+                (e.en || "").toLowerCase().includes(q) ||
+                numStr.includes(q)
+            );
+        });
     }
     return result;
+}
+
+function formatNumber(n) {
+    if (typeof n !== "number") return "#---";
+    return `#${String(n).padStart(3, "0")}`;
 }
 
 function escapeHtml(s) {
