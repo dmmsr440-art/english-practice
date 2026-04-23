@@ -6,7 +6,7 @@
 
 import { initWhyToggle, isWhyViewedTodayFlag, openWhy, isWhyOpen } from "../components/why-toggle.js";
 import { initDailyCheck } from "../components/daily-check.js";
-import { showScreen, showModal, hideModal, showToast } from "../lib/ui.js";
+import { showScreen, showModal, hideModal } from "../lib/ui.js";
 import { openSokkanList } from "./sokkan-list.js";
 import { openChunkList } from "./chunk-list.js";
 import { openDashboard } from "./dashboard.js";
@@ -85,10 +85,4 @@ function handleModuleClick(moduleName) {
         openListeningLog();
         return;
     }
-
-    const names = {
-        cambly: "Camblyログ",
-        solo: "独り言ログ"
-    };
-    showToast(`${names[moduleName] || "このモジュール"} は Phase 2 以降で実装予定です`, "default", 3000);
 }
