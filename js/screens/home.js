@@ -10,6 +10,8 @@ import { showScreen, showModal, hideModal, showToast } from "../lib/ui.js";
 import { openSokkanList } from "./sokkan-list.js";
 import { openChunkList } from "./chunk-list.js";
 import { openDashboard } from "./dashboard.js";
+import { openShadowingLog } from "./shadowing-log.js";
+import { openListeningLog } from "./listening-log.js";
 
 let profileCache = null;
 let homeInitialized = false;
@@ -75,11 +77,17 @@ function handleModuleClick(moduleName) {
         openDashboard();
         return;
     }
+    if (moduleName === "shadowing") {
+        openShadowingLog();
+        return;
+    }
+    if (moduleName === "listening") {
+        openListeningLog();
+        return;
+    }
 
     const names = {
-        shadowing: "シャドーイングログ",
         cambly: "Camblyログ",
-        listening: "多聴ログ",
         solo: "独り言ログ"
     };
     showToast(`${names[moduleName] || "このモジュール"} は Phase 2 以降で実装予定です`, "default", 3000);

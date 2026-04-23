@@ -18,6 +18,8 @@ import { initChunkPracticeScreen } from "./screens/chunk-practice.js";
 import { initChunkQuickAddScreen } from "./screens/chunk-quick-add.js";
 import { initChunkEditScreen } from "./screens/chunk-edit.js";
 import { initDashboardScreen } from "./screens/dashboard.js";
+import { initShadowingLogScreen } from "./screens/shadowing-log.js";
+import { initListeningLogScreen } from "./screens/listening-log.js";
 import { showScreen, showToast } from "./lib/ui.js";
 
 // 起動時処理
@@ -38,6 +40,8 @@ import { showScreen, showToast } from "./lib/ui.js";
     initChunkQuickAddScreen();
     initChunkEditScreen();
     initDashboardScreen();
+    initShadowingLogScreen();
+    initListeningLogScreen();
 
     // 認証状態の変化を監視
     onAuthChange(async (user) => {

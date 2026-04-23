@@ -722,6 +722,80 @@
         </main>
     </div>
 
+    <!-- ========== シャドーイングログ ========== -->
+    <div id="screen-shadowing-log" class="screen">
+        <header class="header">
+            <button id="btn-back-from-shadowing-log" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">🎧 シャドーイングログ</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content">
+            <section class="log-form">
+                <div class="log-form-row">
+                    <label class="edit-label" for="input-shadowing-date">日付</label>
+                    <input type="date" id="input-shadowing-date" class="text-input">
+                </div>
+                <div class="log-form-row">
+                    <label class="edit-label" for="input-shadowing-source">素材</label>
+                    <input type="text" id="input-shadowing-source" class="text-input" placeholder="例: WBEZ Morning Edition">
+                </div>
+                <div class="log-form-row">
+                    <label class="edit-label" for="input-shadowing-minutes">時間（分）</label>
+                    <input type="number" id="input-shadowing-minutes" class="text-input" min="0" step="1" inputmode="numeric">
+                </div>
+                <div class="log-form-row">
+                    <label class="edit-label" for="input-shadowing-memo">聞き取れなかった箇所・気づき（任意）</label>
+                    <textarea id="input-shadowing-memo" class="settings-textarea" rows="3"></textarea>
+                </div>
+                <button id="btn-save-shadowing-log" class="btn-primary">＋ 保存する</button>
+                <p id="shadowing-log-note" class="quick-add-note"></p>
+            </section>
+
+            <section class="log-history">
+                <h2 class="section-title">最近の記録</h2>
+                <div id="shadowing-log-list" class="log-list"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ========== 多聴ログ ========== -->
+    <div id="screen-listening-log" class="screen">
+        <header class="header">
+            <button id="btn-back-from-listening-log" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">📻 多聴ログ</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content">
+            <section class="log-form">
+                <div class="log-form-row">
+                    <label class="edit-label" for="input-listening-date">日付</label>
+                    <input type="date" id="input-listening-date" class="text-input">
+                </div>
+                <div class="log-form-row">
+                    <label class="edit-label" for="input-listening-source">聞いたもの</label>
+                    <input type="text" id="input-listening-source" class="text-input" placeholder="例: WBEZ / Podcast名">
+                </div>
+                <div class="log-form-row">
+                    <label class="edit-label" for="input-listening-minutes">時間（分）</label>
+                    <input type="number" id="input-listening-minutes" class="text-input" min="0" step="1" inputmode="numeric">
+                </div>
+                <div class="log-form-row">
+                    <label class="edit-label" for="input-listening-memo">印象に残ったトピック（任意）</label>
+                    <textarea id="input-listening-memo" class="settings-textarea" rows="3"></textarea>
+                </div>
+                <button id="btn-save-listening-log" class="btn-primary">＋ 保存する</button>
+                <p id="listening-log-note" class="quick-add-note"></p>
+            </section>
+
+            <section class="log-history">
+                <h2 class="section-title">最近の記録</h2>
+                <div id="listening-log-list" class="log-list"></div>
+            </section>
+        </main>
+    </div>
+
     <!-- ========== トースト通知 ========== -->
     <div id="toast" class="toast" hidden></div>
 

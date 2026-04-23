@@ -470,6 +470,64 @@ export async function deleteChunk(id) {
     await deleteDoc(ref);
 }
 
+// --- ログ系（シャドーイング・多聴） ---
+// ミニマム設計：日付・素材/ソース・分数・メモのみ。保存時は該当の日次チェックも自動ON。
+
+function logColRef(uid, kind) {
+    // kind: "shadowingLogs" | "listeningLogs"
+    return collection(db, "users", uid, kind);
+}
+
+async function addLogEntry(kind, checkField, data) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const dateKey = data.dateKey || getTodayDateKey();
+    const payload = {
+        dateKey,
+        source: (data.source || "").trim(),
+        minutes: Number(data.minutes) || 0,
+        memo: (data.memo || "").trim(),
+        createdAt: serverTimestamp()
+    };
+    const ref = await addDoc(logColRef(uid, kind), payload);
+    // 該当日のチェックも自動ON（既にONでも冪等）
+    try {
+        await toggleDailyCheck(dateKey, checkField, true);
+    } catch (err) {
+        console.warn("日次チェック自動更新失敗:", err);
+    }
+    return ref.id;
+}
+
+async function listLogs(kind, limit = 30) {
+    const uid = getUid();
+    if (!uid) return [];
+    const snap = await getDocs(logColRef(uid, kind));
+    const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    rows.sort((a, b) => {
+        if (a.dateKey !== b.dateKey) return b.dateKey.localeCompare(a.dateKey);
+        const ta = a.createdAt?.toMillis?.() || 0;
+        const tb = b.createdAt?.toMillis?.() || 0;
+        return tb - ta;
+    });
+    return rows.slice(0, limit);
+}
+
+async function deleteLogEntry(kind, id) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    const ref = doc(db, "users", uid, kind, id);
+    await deleteDoc(ref);
+}
+
+export const addShadowingLog = (data) => addLogEntry("shadowingLogs", "shadowing", data);
+export const listShadowingLogs = (limit) => listLogs("shadowingLogs", limit);
+export const deleteShadowingLog = (id) => deleteLogEntry("shadowingLogs", id);
+
+export const addListeningLog = (data) => addLogEntry("listeningLogs", "listening", data);
+export const listListeningLogs = (limit) => listLogs("listeningLogs", limit);
+export const deleteListeningLog = (id) => deleteLogEntry("listeningLogs", id);
+
 // --- デフォルト値 ---
 
 export const DEFAULT_WHY = `今の私は、悔しい。
