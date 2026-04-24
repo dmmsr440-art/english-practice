@@ -528,15 +528,16 @@
             <div class="flashcard-wrap">
                 <div id="flashcard" class="flashcard">
                     <div class="flashcard-face flashcard-front">
-                        <p id="flashcard-chunk" class="flashcard-chunk"></p>
-                        <button id="btn-chunk-speak" class="btn-secondary flashcard-speak-btn">
-                            🔊
-                        </button>
-                        <p id="flashcard-flip-hint" class="flashcard-flip-hint">タップでめくる</p>
+                        <div class="flashcard-meaning-label">日本語</div>
+                        <p id="flashcard-meaning" class="flashcard-meaning"></p>
+                        <p id="flashcard-flip-hint" class="flashcard-flip-hint">タップで英語を表示</p>
                     </div>
                     <div class="flashcard-face flashcard-back">
-                        <div class="flashcard-meaning-label">意味</div>
-                        <p id="flashcard-meaning" class="flashcard-meaning"></p>
+                        <div class="flashcard-chunk-label">
+                            チャンク
+                            <button id="btn-chunk-speak" class="btn-ai flashcard-speak-mini" type="button">🔊</button>
+                        </div>
+                        <p id="flashcard-chunk" class="flashcard-chunk"></p>
                         <div class="flashcard-example-label">
                             例文
                             <button id="btn-chunk-speak-example" class="btn-ai flashcard-speak-mini" type="button">🔊</button>
