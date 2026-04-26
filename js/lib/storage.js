@@ -528,6 +528,44 @@ export const addListeningLog = (data) => addLogEntry("listeningLogs", "listening
 export const listListeningLogs = (limit) => listLogs("listeningLogs", limit);
 export const deleteListeningLog = (id) => deleteLogEntry("listeningLogs", id);
 
+// --- 学習ストリーク・空白日数 ---
+
+const STUDY_CHECK_FIELDS = ["shadowing", "listening", "sokkanEisakubun", "soloTalk", "chunk", "cambly"];
+
+// 連続学習日数（streak）と連続空白日数（gap）を返す
+// streak: 今日含む連続学習日数（今日まだ何もしてない場合は0）
+// gap: 昨日から遡った連続空白日数
+export async function getStudyStats(timezone = "America/Chicago") {
+    const todayKey = getTodayDateKey(timezone);
+    const fromKey = addDaysKey(todayKey, -30);
+    const rows = await listDailyChecks(fromKey, todayKey);
+    const rowMap = {};
+    rows.forEach(r => { rowMap[r.dateKey] = r; });
+
+    const isActive = (key) => {
+        const row = rowMap[key];
+        return row && STUDY_CHECK_FIELDS.some(f => row[f] === true);
+    };
+
+    // 空白日数（昨日から遡って、何も記録がない日が何日続いているか）
+    let gap = 0;
+    for (let i = 1; i <= 30; i++) {
+        const key = addDaysKey(todayKey, -i);
+        if (!isActive(key)) gap++;
+        else break;
+    }
+
+    // ストリーク（今日から遡って、連続して学習している日数）
+    let streak = 0;
+    for (let i = 0; i <= 30; i++) {
+        const key = addDaysKey(todayKey, -i);
+        if (isActive(key)) streak++;
+        else break;
+    }
+
+    return { streak, gap };
+}
+
 // --- デフォルト値 ---
 
 export const DEFAULT_WHY = `今の私は、悔しい。

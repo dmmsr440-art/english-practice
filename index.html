@@ -70,7 +70,10 @@
 
             <!-- 日次チェック -->
             <section class="daily-check-section">
-                <h2 class="section-title">📅 今日のチェック</h2>
+                <div class="daily-check-header">
+                    <h2 class="section-title">📅 今日のチェック</h2>
+                    <span class="streak-badge" id="streak-badge" hidden></span>
+                </div>
                 <p class="daily-date" id="daily-date"></p>
                 <ul class="check-list" id="check-list">
                     <!-- JavaScriptで挿入 -->
@@ -791,6 +794,15 @@
 
     <!-- ========== トースト通知 ========== -->
     <div id="toast" class="toast" hidden></div>
+
+    <!-- ========== 不活発警告モーダル ========== -->
+    <div id="modal-inactivity-warning" class="modal" hidden>
+        <div class="modal-content">
+            <h2 id="inactivity-warning-title"></h2>
+            <p id="inactivity-warning-body"></p>
+            <button id="btn-inactivity-close" class="btn-primary">よし、やろう！</button>
+        </div>
+    </div>
 
     <!-- ========== Why表示リマインダーモーダル ========== -->
     <div id="modal-why-reminder" class="modal" hidden>

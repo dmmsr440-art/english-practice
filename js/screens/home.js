@@ -7,6 +7,7 @@
 import { initWhyToggle, isWhyViewedTodayFlag, openWhy, isWhyOpen } from "../components/why-toggle.js";
 import { initDailyCheck } from "../components/daily-check.js";
 import { showScreen, showModal, hideModal } from "../lib/ui.js";
+import { getStudyStats, getTodayDateKey } from "../lib/storage.js";
 import { openSokkanList } from "./sokkan-list.js";
 import { openChunkList } from "./chunk-list.js";
 import { openDashboard } from "./dashboard.js";
@@ -53,9 +54,57 @@ export async function initHomeScreen(profile) {
         document.getElementById("btn-skip-why").addEventListener("click", () => {
             hideModal("modal-why-reminder");
         });
+        document.getElementById("btn-inactivity-close").addEventListener("click", () => {
+            hideModal("modal-inactivity-warning");
+        });
     }
 
     homeInitialized = true;
+
+    // ストリーク表示 + 不活発警告（非同期で後から更新）
+    updateStreakAndWarn();
+}
+
+async function updateStreakAndWarn() {
+    try {
+        const { streak, gap } = await getStudyStats();
+        renderStreakBadge(streak);
+        maybeShowInactivityWarning(gap);
+    } catch (err) {
+        console.warn("ストリーク取得失敗:", err);
+    }
+}
+
+function renderStreakBadge(streak) {
+    const badge = document.getElementById("streak-badge");
+    if (!badge) return;
+    if (streak >= 1) {
+        const fire = streak >= 7 ? "🔥🔥" : "🔥";
+        badge.textContent = `${fire} ${streak}日連続`;
+        badge.className = "streak-badge" + (streak >= 7 ? " hot" : "");
+        badge.hidden = false;
+    } else {
+        badge.hidden = true;
+    }
+}
+
+function maybeShowInactivityWarning(gap) {
+    if (gap < 2) return;
+    const todayKey = getTodayDateKey();
+    const storageKey = "inactivityWarningShownDate";
+    if (localStorage.getItem(storageKey) === todayKey) return;
+    localStorage.setItem(storageKey, todayKey);
+
+    const title = document.getElementById("inactivity-warning-title");
+    const body = document.getElementById("inactivity-warning-body");
+    if (gap >= 5) {
+        title.textContent = "🚨 " + gap + "日間、記録がありません";
+        body.textContent = "長い空白ができています。今日から少しずつ再スタートしましょう。1つだけでも大丈夫です！";
+    } else {
+        title.textContent = "⚠️ " + gap + "日間、記録がありません";
+        body.textContent = "学習の間が空いています。今日、1つだけチェックしてみましょう！";
+    }
+    showModal("modal-inactivity-warning");
 }
 
 function handleModuleClick(moduleName) {
