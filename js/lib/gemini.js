@@ -137,6 +137,36 @@ const CHUNK_EXAMPLE_SYSTEM = `あなたは英語学習者向けの例文作成�
 入力: circle back
 出力: Let's circle back on this next week after we have more data.`;
 
+// ---- チャンク：日本語 → 英語チャンク変換プロンプト ----
+const CHUNK_FROM_JA_SYSTEM = `あなたは英語学習者向けのチャンク変換アシスタントです。
+与えられた日本語の表現・意図を、ネイティブが会話・会議で自然に使う英語チャンク（フレーズ・イディオム）に変換してください。
+
+ルール:
+- 完全な文ではなく、チャンク（フレーズ単位）で出力する
+- ネイティブが実際に使う自然な表現にする（直訳を避ける）
+- 出力は英語フレーズのみ。前置き・説明・日本語・引用符は一切不要。
+
+例:
+入力: 後でこちらから連絡します
+出力: get back to you
+
+入力: 一旦保留にする
+出力: let's table this
+
+入力: 話を元に戻す
+出力: circle back
+
+入力: 積み重なっている
+出力: piling up
+
+入力: ちょっと確認させてください
+出力: let me double-check`;
+
+export async function generateChunkFromJapanese(ja) {
+    if (!ja?.trim()) throw new Error("日本語が空です");
+    return callGemini(CHUNK_FROM_JA_SYSTEM, ja.trim(), { temperature: 0.4 });
+}
+
 export async function generateChunkMeaning(chunk) {
     if (!chunk?.trim()) throw new Error("チャンクが空です");
     return callGemini(CHUNK_MEANING_SYSTEM, chunk.trim(), { temperature: 0.3 });

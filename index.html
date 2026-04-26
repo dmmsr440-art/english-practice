@@ -586,12 +586,27 @@
                     会議で聞いた英語チャンクを即メモ。<br>
                     意味・例文はAI生成または編集画面で追加できます。
                 </p>
+                <label class="edit-label">英語チャンク <span class="edit-required">*</span></label>
                 <textarea
                     id="input-chunk-quick"
                     class="settings-textarea quick-add-textarea"
-                    rows="3"
+                    rows="2"
                     placeholder="英語チャンク（例：get back to you）"
                 ></textarea>
+
+                <div class="chunk-ja-convert-area">
+                    <div class="edit-field-head">
+                        <label class="edit-label">日本語から入力（任意）</label>
+                        <button id="btn-translate-chunk-quick" class="btn-ai" type="button">🤖 英語に変換</button>
+                    </div>
+                    <textarea
+                        id="input-chunk-quick-ja"
+                        class="settings-textarea"
+                        rows="2"
+                        placeholder="例：後でこちらから連絡します"
+                    ></textarea>
+                </div>
+
                 <button id="btn-save-chunk-quick" class="btn-primary btn-block">
                     ＋ 追加する
                 </button>
@@ -615,7 +630,10 @@
                     <span class="settings-value" id="chunk-edit-number">-</span>
                 </div>
 
-                <label class="edit-label">チャンク <span class="edit-required">*</span></label>
+                <div class="edit-field-head">
+                    <label class="edit-label">チャンク <span class="edit-required">*</span></label>
+                    <button id="btn-ai-chunk-from-ja" class="btn-ai" type="button">🤖 日本語から変換</button>
+                </div>
                 <textarea
                     id="input-chunk-text"
                     class="settings-textarea"

@@ -6,7 +6,7 @@ import { updateChunk, deleteChunk } from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
 import { refreshChunkList } from "./chunk-list.js";
 import {
-    generateChunkMeaning, generateChunkExample, hasGeminiApiKey
+    generateChunkMeaning, generateChunkExample, generateChunkFromJapanese, hasGeminiApiKey
 } from "../lib/gemini.js";
 
 let initialized = false;
@@ -23,6 +23,7 @@ export function initChunkEditScreen() {
     document.getElementById("btn-save-chunk-edit").addEventListener("click", handleSave);
     document.getElementById("btn-delete-chunk-edit").addEventListener("click", handleDelete);
 
+    document.getElementById("btn-ai-chunk-from-ja").addEventListener("click", handleAIFromJa);
     document.getElementById("btn-ai-chunk-meaning").addEventListener("click", handleAIMeaning);
     document.getElementById("btn-ai-chunk-example").addEventListener("click", handleAIExample);
 
@@ -97,6 +98,34 @@ async function handleDelete() {
     } finally {
         btn.disabled = false;
         btn.textContent = "🗑 このチャンクを削除";
+    }
+}
+
+async function handleAIFromJa() {
+    if (!hasGeminiApiKey()) {
+        showToast("設定画面でGemini APIキーを登録してください", "error", 3500);
+        return;
+    }
+    const meaning = document.getElementById("input-chunk-meaning").value.trim();
+    if (!meaning) {
+        showToast("先に「意味」フィールドに日本語を入力してください", "error", 3500);
+        document.getElementById("input-chunk-meaning").focus();
+        return;
+    }
+    const btn = document.getElementById("btn-ai-chunk-from-ja");
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "変換中…";
+    try {
+        const chunk = await generateChunkFromJapanese(meaning);
+        document.getElementById("input-chunk-text").value = chunk;
+        showToast("英語チャンクを生成しました", "success");
+    } catch (err) {
+        console.error(err);
+        showToast(err.message || "AI変換に失敗しました", "error", 4000);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = original;
     }
 }
 
