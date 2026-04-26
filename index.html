@@ -71,10 +71,14 @@
             <!-- 日次チェック -->
             <section class="daily-check-section">
                 <div class="daily-check-header">
-                    <h2 class="section-title">📅 今日のチェック</h2>
+                    <h2 class="section-title" id="daily-check-title">📅 今日のチェック</h2>
                     <span class="streak-badge" id="streak-badge" hidden></span>
                 </div>
-                <p class="daily-date" id="daily-date"></p>
+                <div class="daily-date-nav">
+                    <button class="date-nav-btn" id="btn-date-prev" aria-label="前日">‹</button>
+                    <p class="daily-date" id="daily-date"></p>
+                    <button class="date-nav-btn" id="btn-date-next" aria-label="翌日">›</button>
+                </div>
                 <ul class="check-list" id="check-list">
                     <!-- JavaScriptで挿入 -->
                 </ul>
