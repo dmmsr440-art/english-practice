@@ -1,10 +1,10 @@
 // 瞬間英作文・クイック入力画面
-// - 会議中に詰まった日本語を即メモ（日本語のみ）
-// - 英訳・発音ポイントは空で保存（後でAI生成または編集で追加）
+// - 日本語を入力、英訳はAI生成または手入力、カテゴリ選択
 
 import { addSokkanExample } from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
 import { refreshSokkanList } from "./sokkan-list.js";
+import { generateTranslation, hasGeminiApiKey } from "../lib/gemini.js";
 
 let initialized = false;
 
@@ -16,27 +16,58 @@ export function initSokkanQuickAddScreen() {
     });
 
     document.getElementById("btn-save-quick").addEventListener("click", handleSave);
+    document.getElementById("btn-ai-translate-quick").addEventListener("click", handleAITranslate);
 
     initialized = true;
 }
 
 export function openSokkanQuickAdd() {
-    const ta = document.getElementById("input-quick-ja");
-    ta.value = "";
+    document.getElementById("input-quick-ja").value = "";
+    document.getElementById("input-quick-en").value = "";
+    document.getElementById("input-quick-category").value = "";
     document.getElementById("quick-add-note").textContent = "";
     showScreen("screen-sokkan-quick-add");
-    setTimeout(() => ta.focus(), 100);
+    setTimeout(() => document.getElementById("input-quick-ja").focus(), 100);
+}
+
+async function handleAITranslate() {
+    if (!hasGeminiApiKey()) {
+        showToast("設定画面でGemini APIキーを登録してください", "error", 3500);
+        return;
+    }
+    const ja = document.getElementById("input-quick-ja").value.trim();
+    if (!ja) {
+        showToast("日本語を入力してください", "error");
+        document.getElementById("input-quick-ja").focus();
+        return;
+    }
+    const btn = document.getElementById("btn-ai-translate-quick");
+    btn.disabled = true;
+    btn.textContent = "生成中…";
+    try {
+        const en = await generateTranslation(ja);
+        document.getElementById("input-quick-en").value = en;
+        showToast("英訳を生成しました", "success");
+    } catch (err) {
+        console.error(err);
+        showToast(err.message || "AI生成に失敗しました", "error", 4000);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "🤖 AI生成";
+    }
 }
 
 async function handleSave() {
-    const ta = document.getElementById("input-quick-ja");
+    const jaEl = document.getElementById("input-quick-ja");
     const note = document.getElementById("quick-add-note");
     const btn = document.getElementById("btn-save-quick");
-    const ja = ta.value.trim();
+    const ja = jaEl.value.trim();
+    const en = document.getElementById("input-quick-en").value.trim();
+    const category = document.getElementById("input-quick-category").value;
 
     if (!ja) {
         showToast("日本語を入力してください", "error");
-        ta.focus();
+        jaEl.focus();
         return;
     }
 
@@ -44,10 +75,12 @@ async function handleSave() {
     btn.textContent = "保存中…";
 
     try {
-        await addSokkanExample({ ja });
+        await addSokkanExample({ ja, en, category });
         note.textContent = "✓ 追加しました。続けて入力できます。";
-        ta.value = "";
-        ta.focus();
+        jaEl.value = "";
+        document.getElementById("input-quick-en").value = "";
+        document.getElementById("input-quick-category").value = "";
+        jaEl.focus();
         await refreshSokkanList();
     } catch (err) {
         console.error("クイック保存失敗:", err);

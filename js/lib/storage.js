@@ -188,12 +188,12 @@ export async function listSokkanExamples() {
     const snap = await getDocs(sokkanColRef(uid));
     const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     rows.sort((a, b) => {
-        const na = typeof a.number === "number" ? a.number : Infinity;
-        const nb = typeof b.number === "number" ? b.number : Infinity;
-        if (na !== nb) return na - nb;
+        const na = typeof a.number === "number" ? a.number : -Infinity;
+        const nb = typeof b.number === "number" ? b.number : -Infinity;
+        if (na !== nb) return nb - na;
         const ta = a.createdAt?.toMillis?.() || 0;
         const tb = b.createdAt?.toMillis?.() || 0;
-        return ta - tb;
+        return tb - ta;
     });
     return rows;
 }
@@ -402,12 +402,12 @@ export async function listChunks() {
     const snap = await getDocs(chunkColRef(uid));
     const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     rows.sort((a, b) => {
-        const na = typeof a.number === "number" ? a.number : Infinity;
-        const nb = typeof b.number === "number" ? b.number : Infinity;
-        if (na !== nb) return na - nb;
+        const na = typeof a.number === "number" ? a.number : -Infinity;
+        const nb = typeof b.number === "number" ? b.number : -Infinity;
+        if (na !== nb) return nb - na;
         const ta = a.createdAt?.toMillis?.() || 0;
         const tb = b.createdAt?.toMillis?.() || 0;
-        return ta - tb;
+        return tb - ta;
     });
     return rows;
 }

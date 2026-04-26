@@ -217,9 +217,6 @@
                 <button id="btn-start-practice-normal" class="btn-primary btn-block">
                     ▶︎ 練習を始める
                 </button>
-                <button id="btn-start-practice-flag" class="btn-secondary btn-block">
-                    🚩 フラグ付きだけで練習
-                </button>
                 <button id="btn-open-import" class="btn-text btn-import-link">
                     📥 Excel/CSVから一括インポート
                 </button>
@@ -233,8 +230,11 @@
                     class="sokkan-search-input"
                     placeholder="🔍 日本語・英訳で検索"
                 />
-                <div class="sokkan-filter-tabs">
+                <div class="sokkan-filter-tabs" id="sokkan-filter-tabs">
                     <button class="filter-tab active" data-filter="all">全て</button>
+                    <button class="filter-tab" data-filter="cat-ビジネス雑談">ビジネス雑談</button>
+                    <button class="filter-tab" data-filter="cat-英会話練習">英会話練習</button>
+                    <button class="filter-tab" data-filter="cat-その他">その他</button>
                     <button class="filter-tab" data-filter="flag">🚩 フラグ</button>
                 </div>
             </section>
@@ -312,15 +312,35 @@
         <main class="main-content">
             <section class="quick-add-section">
                 <p class="quick-add-hint">
-                    会議中に詰まった日本語を即メモ。<br>
-                    英訳・発音ポイントは後で追加できます。
+                    詰まった日本語を即メモ。英訳はAI生成または後で追加できます。
                 </p>
+                <label class="edit-label">日本語 <span class="edit-required">*</span></label>
                 <textarea
                     id="input-quick-ja"
-                    class="settings-textarea quick-add-textarea"
-                    rows="4"
-                    placeholder="日本語を入力（例：「もう少し具体的に言うと…」）"
+                    class="settings-textarea"
+                    rows="3"
+                    placeholder="日本語（例：もう少し具体的に言うと…）"
                 ></textarea>
+
+                <div class="edit-field-head">
+                    <label class="edit-label">英訳（任意）</label>
+                    <button id="btn-ai-translate-quick" class="btn-ai" type="button">🤖 AI生成</button>
+                </div>
+                <textarea
+                    id="input-quick-en"
+                    class="settings-textarea"
+                    rows="2"
+                    placeholder="English translation"
+                ></textarea>
+
+                <label class="edit-label">カテゴリ（任意）</label>
+                <select id="input-quick-category" class="sokkan-category-select">
+                    <option value="">選択しない</option>
+                    <option value="ビジネス雑談">ビジネス雑談</option>
+                    <option value="英会話練習">英会話練習</option>
+                    <option value="その他">その他</option>
+                </select>
+
                 <button id="btn-save-quick" class="btn-primary btn-block">
                     ＋ 追加する
                 </button>
@@ -375,12 +395,12 @@
                 ></textarea>
 
                 <label class="edit-label">カテゴリ</label>
-                <input
-                    type="text"
-                    id="input-edit-category"
-                    class="sokkan-search-input"
-                    placeholder="例：ビジネス / 雑談 / 会議"
-                />
+                <select id="input-edit-category" class="sokkan-category-select">
+                    <option value="">未分類</option>
+                    <option value="ビジネス雑談">ビジネス雑談</option>
+                    <option value="英会話練習">英会話練習</option>
+                    <option value="その他">その他</option>
+                </select>
 
                 <div class="edit-footer">
                     <button id="btn-save-edit" class="btn-primary btn-block">

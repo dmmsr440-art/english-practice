@@ -421,6 +421,15 @@
 .sokkan-filter-tabs {
     display: flex;
     gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+}
+
+.sokkan-filter-tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .filter-tab {
@@ -436,6 +445,27 @@
 .filter-tab.active {
     background: var(--primary);
     color: white;
+}
+
+.sokkan-category-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius);
+    font-size: 15px;
+    background: white;
+    color: var(--text-1);
+    margin-bottom: 16px;
+}
+
+.item-cat-badge {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--primary);
+    background: #eff6ff;
+    border-radius: 99px;
+    padding: 2px 7px;
+    white-space: nowrap;
 }
 
 .sokkan-count {
