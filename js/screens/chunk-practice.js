@@ -3,7 +3,10 @@
 // - 裏：意味・例文・出典・場面
 // - 前後移動・TTS・フラグ・練習回数記録
 
-import { toggleChunkFlag, recordChunkPractice } from "../lib/storage.js";
+import {
+    setChunkFlagLevel, recordChunkPractice,
+    FLAG_ICONS, FLAG_LABELS, normalizeFlagLevel, nextFlagLevel
+} from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
 import { speak, stopSpeaking } from "../lib/tts.js";
 import { refreshChunkList } from "./chunk-list.js";
@@ -118,26 +121,22 @@ function render() {
     card.classList.toggle("flipped", flipped);
     document.getElementById("flashcard-flip-hint").hidden = flipped;
 
-    updateFlagUI(cur.flag);
+    updateFlagUI(cur.flagLevel);
 
     document.getElementById("btn-chunk-prev").disabled = (idx === 0);
     document.getElementById("btn-chunk-next").textContent =
         (idx === queue.length - 1) ? "終了 ✓" : "次のカード →";
 }
 
-function updateFlagUI(flag) {
+function updateFlagUI(flagLevel) {
+    const level = normalizeFlagLevel(flagLevel);
     const icon = document.getElementById("chunk-flag-icon");
     const text = document.getElementById("chunk-flag-text");
     const btn = document.getElementById("btn-chunk-toggle-flag");
-    if (flag) {
-        icon.textContent = "🚩";
-        text.textContent = "フラグ付き";
-        btn.classList.add("on");
-    } else {
-        icon.textContent = "🏳️";
-        text.textContent = "フラグを付ける";
-        btn.classList.remove("on");
-    }
+    icon.textContent = FLAG_ICONS[level];
+    text.textContent = `${FLAG_LABELS[level]}（タップで切替）`;
+    btn.classList.remove("flag-red", "flag-yellow", "flag-blue");
+    btn.classList.add(`flag-${level}`);
 }
 
 function toggleFlip() {
@@ -178,14 +177,15 @@ async function handleFlagToggle(evt) {
     evt.stopPropagation();
     const cur = queue[idx];
     if (!cur) return;
-    const newFlag = !cur.flag;
-    cur.flag = newFlag;
-    updateFlagUI(newFlag);
+    const prevLevel = normalizeFlagLevel(cur.flagLevel);
+    const newLevel = nextFlagLevel(prevLevel);
+    cur.flagLevel = newLevel;
+    updateFlagUI(newLevel);
     try {
-        await toggleChunkFlag(cur.id, newFlag);
+        await setChunkFlagLevel(cur.id, newLevel);
     } catch (err) {
-        cur.flag = !newFlag;
-        updateFlagUI(!newFlag);
+        cur.flagLevel = prevLevel;
+        updateFlagUI(prevLevel);
         showToast("保存に失敗しました", "error");
     }
 }

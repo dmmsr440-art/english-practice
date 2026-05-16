@@ -510,6 +510,17 @@
     background: #FEF3C7;
 }
 
+/* フラグ色（3段階：赤=全然ダメ / 黄=まだまだ / 青=もう大丈夫） */
+.sokkan-item-flag.flag-red {
+    background: #fee2e2;
+}
+.sokkan-item-flag.flag-yellow {
+    background: #fef3c7;
+}
+.sokkan-item-flag.flag-blue {
+    background: #dbeafe;
+}
+
 .sokkan-item-body {
     flex: 1;
     padding: 12px 14px;
@@ -685,6 +696,23 @@
     background: #FEF3C7;
     color: #92400E;
     border-color: #FCD34D;
+}
+
+/* 練習画面のフラグボタン：3段階の色 */
+.btn-flag.flag-red {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #fca5a5;
+}
+.btn-flag.flag-yellow {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #fcd34d;
+}
+.btn-flag.flag-blue {
+    background: #dbeafe;
+    color: #1e40af;
+    border-color: #93c5fd;
 }
 
 .practice-footer {

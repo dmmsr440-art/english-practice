@@ -1,16 +1,18 @@
 // チャンク学習・一覧画面
-// - 検索（chunk・意味）・絞り込み（全て / フラグ付き）
-// - ＋ボタン → クイック入力
-// - 行タップ → 1問フラッシュカード / ✏️ → 編集
+// - フラグ色（赤/黄/青）別の絞り込み・練習
+// - 検索・タップ練習・フラグ循環切替・編集
 
-import { listChunks, toggleChunkFlag } from "../lib/storage.js";
+import {
+    listChunks, setChunkFlagLevel,
+    FLAG_ICONS, normalizeFlagLevel, nextFlagLevel
+} from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
 import { startChunkPractice } from "./chunk-practice.js";
 import { openChunkQuickAdd } from "./chunk-quick-add.js";
 import { openChunkEdit } from "./chunk-edit.js";
 
 let allChunks = [];
-let currentFilter = "all";
+let currentFilter = "all"; // "all" | "flag-red" | "flag-yellow" | "flag-blue"
 let currentSearch = "";
 let listInitialized = false;
 
@@ -46,23 +48,25 @@ export function initChunkListScreen() {
     });
 
     document.getElementById("btn-start-chunk-practice-normal").addEventListener("click", () => {
-        if (allChunks.length === 0) {
-            showToast("チャンクがありません", "error");
-            return;
-        }
-        startChunkPractice({ mode: "normal", chunks: allChunks });
-    });
-
-    document.getElementById("btn-start-chunk-practice-flag").addEventListener("click", () => {
-        const pool = allChunks.filter(c => c.flag);
+        const pool = getPoolForPractice();
         if (pool.length === 0) {
-            showToast("🚩フラグ付きのチャンクがありません", "default", 3000);
+            showToast("該当するチャンクがありません", "error");
             return;
         }
-        startChunkPractice({ mode: "flag", chunks: pool });
+        const mode = currentFilter.startsWith("flag-") ? "flag" : "normal";
+        startChunkPractice({ mode, chunks: pool });
     });
 
     listInitialized = true;
+}
+
+function getPoolForPractice() {
+    if (currentFilter === "all") return allChunks;
+    if (currentFilter.startsWith("flag-")) {
+        const color = currentFilter.slice(5);
+        return allChunks.filter(c => normalizeFlagLevel(c.flagLevel) === color);
+    }
+    return allChunks;
 }
 
 async function reloadAndRender() {
@@ -78,12 +82,19 @@ async function reloadAndRender() {
 
 function render() {
     const filtered = applyFilter(allChunks);
-
     const listEl = document.getElementById("chunk-list");
     const emptyEl = document.getElementById("chunk-empty");
     const countEl = document.getElementById("chunk-count");
+    const practiceBtn = document.getElementById("btn-start-chunk-practice-normal");
 
     countEl.textContent = `${filtered.length} / ${allChunks.length}件`;
+
+    if (currentFilter.startsWith("flag-")) {
+        const color = currentFilter.slice(5);
+        practiceBtn.textContent = `${FLAG_ICONS[color]} ${{red:"赤",yellow:"黄",blue:"青"}[color]}フラグで練習`;
+    } else {
+        practiceBtn.textContent = "▶︎ フラッシュカード練習";
+    }
 
     if (filtered.length === 0) {
         listEl.innerHTML = "";
@@ -93,12 +104,12 @@ function render() {
     emptyEl.hidden = true;
 
     listEl.innerHTML = filtered.map((c) => {
-        const flagClass = c.flag ? "flag-on" : "flag-off";
-        const flagIcon = c.flag ? "🚩" : "🏳️";
+        const level = normalizeFlagLevel(c.flagLevel);
+        const flagIcon = FLAG_ICONS[level];
         const numLabel = formatNumber(c.number);
         return `
             <li class="sokkan-item" data-id="${c.id}">
-                <button class="sokkan-item-flag ${flagClass}" data-flag-id="${c.id}" aria-label="フラグ切替">
+                <button class="sokkan-item-flag flag-${level}" data-flag-id="${c.id}" aria-label="フラグ切替">
                     ${flagIcon}
                 </button>
                 <div class="sokkan-item-body" data-practice-id="${c.id}">
@@ -135,19 +146,21 @@ function render() {
         });
     });
 
+    // フラグ循環切替（赤→黄→青→赤）
     listEl.querySelectorAll("[data-flag-id]").forEach(el => {
         el.addEventListener("click", async (evt) => {
             evt.stopPropagation();
             const id = el.dataset.flagId;
             const c = allChunks.find(x => x.id === id);
             if (!c) return;
-            const newFlag = !c.flag;
-            c.flag = newFlag;
+            const prevLevel = normalizeFlagLevel(c.flagLevel);
+            const newLevel = nextFlagLevel(prevLevel);
+            c.flagLevel = newLevel;
             render();
             try {
-                await toggleChunkFlag(id, newFlag);
+                await setChunkFlagLevel(id, newLevel);
             } catch (err) {
-                c.flag = !newFlag;
+                c.flagLevel = prevLevel;
                 render();
                 showToast("保存に失敗しました", "error");
             }
@@ -157,8 +170,9 @@ function render() {
 
 function applyFilter(chunks) {
     let result = chunks;
-    if (currentFilter === "flag") {
-        result = result.filter(c => c.flag);
+    if (currentFilter.startsWith("flag-")) {
+        const color = currentFilter.slice(5);
+        result = result.filter(c => normalizeFlagLevel(c.flagLevel) === color);
     }
     if (currentSearch) {
         const q = currentSearch;

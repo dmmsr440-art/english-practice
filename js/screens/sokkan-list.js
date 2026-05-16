@@ -1,9 +1,11 @@
 // 瞬間英作文・一覧画面
-// - カテゴリタブ（全て / ビジネス雑談 / 英会話練習 / その他 / フラグ）で絞り込み
-// - 選択中のカテゴリで練習開始
-// - 検索・タップ練習・フラグ切替・編集
+// - フラグ色（赤/黄/青）・カテゴリ別の絞り込み・練習
+// - 検索・タップ練習・フラグ循環切替・編集
 
-import { listSokkanExamples, toggleSokkanFlag } from "../lib/storage.js";
+import {
+    listSokkanExamples, setSokkanFlagLevel,
+    FLAG_ICONS, normalizeFlagLevel, nextFlagLevel
+} from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
 import { startPractice } from "./sokkan-practice.js";
 import { openSokkanQuickAdd } from "./sokkan-quick-add.js";
@@ -11,7 +13,7 @@ import { openSokkanEdit } from "./sokkan-edit.js";
 import { openSokkanImport } from "./sokkan-import.js";
 
 let allExamples = [];
-let currentFilter = "all"; // "all" | "flag" | "cat-ビジネス雑談" | "cat-英会話練習" | "cat-その他"
+let currentFilter = "all"; // "all" | "flag-red" | "flag-yellow" | "flag-blue" | "cat-ビジネス" | "cat-カジュアル" | "cat-どちらでも"
 let currentSearch = "";
 let listInitialized = false;
 
@@ -56,7 +58,7 @@ export function initSokkanListScreen() {
             showToast("該当する例文がありません", "error");
             return;
         }
-        const mode = currentFilter === "flag" ? "flag" : "normal";
+        const mode = currentFilter.startsWith("flag-") ? "flag" : "normal";
         startPractice({ mode, examples: pool });
     });
 
@@ -65,7 +67,10 @@ export function initSokkanListScreen() {
 
 function getPoolForPractice() {
     if (currentFilter === "all") return allExamples;
-    if (currentFilter === "flag") return allExamples.filter(e => e.flag);
+    if (currentFilter.startsWith("flag-")) {
+        const color = currentFilter.slice(5);
+        return allExamples.filter(e => normalizeFlagLevel(e.flagLevel) === color);
+    }
     if (currentFilter.startsWith("cat-")) {
         const cat = currentFilter.slice(4);
         return allExamples.filter(e => (e.category || "") === cat);
@@ -93,8 +98,9 @@ function render() {
 
     countEl.textContent = `${filtered.length} / ${allExamples.length}件`;
 
-    if (currentFilter === "flag") {
-        practiceBtn.textContent = "🚩 フラグ付きで練習";
+    if (currentFilter.startsWith("flag-")) {
+        const color = currentFilter.slice(5);
+        practiceBtn.textContent = `${FLAG_ICONS[color]} ${{red:"赤",yellow:"黄",blue:"青"}[color]}フラグで練習`;
     } else if (currentFilter.startsWith("cat-")) {
         practiceBtn.textContent = `▶︎ ${currentFilter.slice(4)}を練習`;
     } else {
@@ -109,15 +115,15 @@ function render() {
     emptyEl.hidden = true;
 
     listEl.innerHTML = filtered.map((ex) => {
-        const flagClass = ex.flag ? "flag-on" : "flag-off";
-        const flagIcon = ex.flag ? "🚩" : "🏳️";
+        const level = normalizeFlagLevel(ex.flagLevel);
+        const flagIcon = FLAG_ICONS[level];
         const numLabel = formatNumber(ex.number);
         const catBadge = ex.category
             ? `<span class="item-cat-badge">${escapeHtml(ex.category)}</span>`
             : "";
         return `
             <li class="sokkan-item" data-id="${ex.id}">
-                <button class="sokkan-item-flag ${flagClass}" data-flag-id="${ex.id}" aria-label="フラグ切替">
+                <button class="sokkan-item-flag flag-${level}" data-flag-id="${ex.id}" aria-label="フラグ切替">
                     ${flagIcon}
                 </button>
                 <div class="sokkan-item-body" data-practice-id="${ex.id}">
@@ -155,19 +161,21 @@ function render() {
         });
     });
 
+    // フラグ循環切替（赤→黄→青→赤）
     listEl.querySelectorAll("[data-flag-id]").forEach(el => {
         el.addEventListener("click", async (evt) => {
             evt.stopPropagation();
             const id = el.dataset.flagId;
             const ex = allExamples.find(x => x.id === id);
             if (!ex) return;
-            const newFlag = !ex.flag;
-            ex.flag = newFlag;
+            const prevLevel = normalizeFlagLevel(ex.flagLevel);
+            const newLevel = nextFlagLevel(prevLevel);
+            ex.flagLevel = newLevel;
             render();
             try {
-                await toggleSokkanFlag(id, newFlag);
+                await setSokkanFlagLevel(id, newLevel);
             } catch (err) {
-                ex.flag = !newFlag;
+                ex.flagLevel = prevLevel;
                 render();
                 showToast("保存に失敗しました", "error");
             }
@@ -177,8 +185,9 @@ function render() {
 
 function applyFilter(examples) {
     let result = examples;
-    if (currentFilter === "flag") {
-        result = result.filter(e => e.flag);
+    if (currentFilter.startsWith("flag-")) {
+        const color = currentFilter.slice(5);
+        result = result.filter(e => normalizeFlagLevel(e.flagLevel) === color);
     } else if (currentFilter.startsWith("cat-")) {
         const cat = currentFilter.slice(4);
         result = result.filter(e => (e.category || "") === cat);

@@ -4,7 +4,10 @@
 // - 日本語 → 回答表示 → TTS・発音ポイント・フラグ
 // - 回答を見た時点で練習回数を +1
 
-import { toggleSokkanFlag, recordSokkanPractice } from "../lib/storage.js";
+import {
+    setSokkanFlagLevel, recordSokkanPractice,
+    FLAG_ICONS, FLAG_LABELS, normalizeFlagLevel, nextFlagLevel
+} from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
 import { speak, stopSpeaking } from "../lib/tts.js";
 import { refreshSokkanList } from "./sokkan-list.js";
@@ -98,7 +101,7 @@ function render() {
         '<span class="pron-missing">発音ポイントは未登録です</span>';
 
     // フラグ表示
-    updateFlagUI(cur.flag);
+    updateFlagUI(cur.flagLevel);
 
     // リビール状態
     document.getElementById("practice-reveal").hidden = !revealed;
@@ -110,19 +113,15 @@ function render() {
     nextBtn.textContent = (idx === queue.length - 1) ? "終了 ✓" : "次の問題 →";
 }
 
-function updateFlagUI(flag) {
+function updateFlagUI(flagLevel) {
+    const level = normalizeFlagLevel(flagLevel);
     const icon = document.getElementById("flag-icon");
     const text = document.getElementById("flag-text");
     const btn = document.getElementById("btn-toggle-flag");
-    if (flag) {
-        icon.textContent = "🚩";
-        text.textContent = "フラグ付き";
-        btn.classList.add("on");
-    } else {
-        icon.textContent = "🏳️";
-        text.textContent = "フラグを付ける";
-        btn.classList.remove("on");
-    }
+    icon.textContent = FLAG_ICONS[level];
+    text.textContent = `${FLAG_LABELS[level]}（タップで切替）`;
+    btn.classList.remove("flag-red", "flag-yellow", "flag-blue");
+    btn.classList.add(`flag-${level}`);
 }
 
 function revealAnswer() {
@@ -170,14 +169,15 @@ function prev() {
 async function handleFlagToggle() {
     const cur = queue[idx];
     if (!cur) return;
-    const newFlag = !cur.flag;
-    cur.flag = newFlag;
-    updateFlagUI(newFlag);
+    const prevLevel = normalizeFlagLevel(cur.flagLevel);
+    const newLevel = nextFlagLevel(prevLevel);
+    cur.flagLevel = newLevel;
+    updateFlagUI(newLevel);
     try {
-        await toggleSokkanFlag(cur.id, newFlag);
+        await setSokkanFlagLevel(cur.id, newLevel);
     } catch (err) {
-        cur.flag = !newFlag;
-        updateFlagUI(!newFlag);
+        cur.flagLevel = prevLevel;
+        updateFlagUI(prevLevel);
         showToast("保存に失敗しました", "error");
     }
 }

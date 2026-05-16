@@ -232,10 +232,12 @@
                 />
                 <div class="sokkan-filter-tabs" id="sokkan-filter-tabs">
                     <button class="filter-tab active" data-filter="all">全て</button>
-                    <button class="filter-tab" data-filter="cat-ビジネス雑談">ビジネス雑談</button>
-                    <button class="filter-tab" data-filter="cat-英会話練習">英会話練習</button>
-                    <button class="filter-tab" data-filter="cat-その他">その他</button>
-                    <button class="filter-tab" data-filter="flag">🚩 フラグ</button>
+                    <button class="filter-tab" data-filter="flag-red">🔴 赤</button>
+                    <button class="filter-tab" data-filter="flag-yellow">🟡 黄</button>
+                    <button class="filter-tab" data-filter="flag-blue">🔵 青</button>
+                    <button class="filter-tab" data-filter="cat-ビジネス">ビジネス</button>
+                    <button class="filter-tab" data-filter="cat-カジュアル">カジュアル</button>
+                    <button class="filter-tab" data-filter="cat-どちらでも">どちらでも</button>
                 </div>
             </section>
 
@@ -333,12 +335,23 @@
                     placeholder="English translation"
                 ></textarea>
 
+                <div class="edit-field-head">
+                    <label class="edit-label">発音ポイント（任意）</label>
+                    <button id="btn-ai-pronunciation-quick" class="btn-ai" type="button">🤖 AI生成</button>
+                </div>
+                <textarea
+                    id="input-quick-pron"
+                    class="settings-textarea"
+                    rows="3"
+                    placeholder="発音のポイント（HTMLタグ可：&lt;b&gt;&lt;u&gt;）"
+                ></textarea>
+
                 <label class="edit-label">カテゴリ（任意）</label>
                 <select id="input-quick-category" class="sokkan-category-select">
                     <option value="">選択しない</option>
-                    <option value="ビジネス雑談">ビジネス雑談</option>
-                    <option value="英会話練習">英会話練習</option>
-                    <option value="その他">その他</option>
+                    <option value="ビジネス">ビジネス</option>
+                    <option value="カジュアル">カジュアル</option>
+                    <option value="どちらでも">どちらでも</option>
                 </select>
 
                 <button id="btn-save-quick" class="btn-primary btn-block">
@@ -397,9 +410,9 @@
                 <label class="edit-label">カテゴリ</label>
                 <select id="input-edit-category" class="sokkan-category-select">
                     <option value="">未分類</option>
-                    <option value="ビジネス雑談">ビジネス雑談</option>
-                    <option value="英会話練習">英会話練習</option>
-                    <option value="その他">その他</option>
+                    <option value="ビジネス">ビジネス</option>
+                    <option value="カジュアル">カジュアル</option>
+                    <option value="どちらでも">どちらでも</option>
                 </select>
 
                 <div class="edit-footer">
@@ -512,9 +525,6 @@
                 <button id="btn-start-chunk-practice-normal" class="btn-primary btn-block">
                     ▶︎ フラッシュカード練習
                 </button>
-                <button id="btn-start-chunk-practice-flag" class="btn-secondary btn-block">
-                    🚩 フラグ付きだけで練習
-                </button>
             </section>
 
             <section class="sokkan-filters">
@@ -526,7 +536,9 @@
                 />
                 <div id="chunk-filter-tabs" class="sokkan-filter-tabs">
                     <button class="filter-tab active" data-filter="all">全て</button>
-                    <button class="filter-tab" data-filter="flag">🚩 フラグ</button>
+                    <button class="filter-tab" data-filter="flag-red">🔴 赤</button>
+                    <button class="filter-tab" data-filter="flag-yellow">🟡 黄</button>
+                    <button class="filter-tab" data-filter="flag-blue">🔵 青</button>
                 </div>
             </section>
 

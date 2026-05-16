@@ -17,6 +17,35 @@ export function getUid() {
     return auth.currentUser?.uid || null;
 }
 
+// --- フラグレベル定数・ヘルパー ---
+// 3段階：red（全然ダメ） → yellow（出来るけどまだまだ） → blue（もう大丈夫）
+export const FLAG_LEVELS = ["red", "yellow", "blue"];
+export const FLAG_ICONS = { red: "🔴", yellow: "🟡", blue: "🔵" };
+export const FLAG_LABELS = {
+    red: "全然ダメ",
+    yellow: "まだまだ",
+    blue: "もう大丈夫"
+};
+
+export function normalizeFlagLevel(level) {
+    return FLAG_LEVELS.includes(level) ? level : "red";
+}
+
+export function nextFlagLevel(level) {
+    const idx = FLAG_LEVELS.indexOf(normalizeFlagLevel(level));
+    return FLAG_LEVELS[(idx + 1) % FLAG_LEVELS.length];
+}
+
+// --- カテゴリ定数（瞬間英作文） ---
+export const SOKKAN_CATEGORIES = ["ビジネス", "カジュアル", "どちらでも"];
+
+// 旧カテゴリ → 新カテゴリの対応表
+const SOKKAN_CATEGORY_MIGRATION = {
+    "ビジネス雑談": "ビジネス",
+    "英会話練習": "カジュアル",
+    "その他": "どちらでも"
+};
+
 // --- プロフィール操作 ---
 
 export async function getProfile() {
@@ -70,7 +99,74 @@ export async function ensureProfile(user) {
         }
     }
 
+    // フラグレベルのマイグレーション（既存全件を red に統一）
+    if (!profile.flagLevelsMigrated) {
+        try {
+            await migrateToFlagLevels(uid);
+            await updateDoc(ref, { flagLevelsMigrated: true });
+            profile.flagLevelsMigrated = true;
+        } catch (err) {
+            console.warn("フラグレベル移行失敗（次回再試行）:", err);
+        }
+    }
+
+    // カテゴリv2のマイグレーション（旧→新カテゴリ名）
+    if (!profile.sokkanCategoriesV2Migrated) {
+        try {
+            await migrateSokkanCategoriesV2(uid);
+            await updateDoc(ref, { sokkanCategoriesV2Migrated: true });
+            profile.sokkanCategoriesV2Migrated = true;
+        } catch (err) {
+            console.warn("カテゴリv2移行失敗（次回再試行）:", err);
+        }
+    }
+
     return profile;
+}
+
+// --- マイグレーション関数 ---
+
+// 既存のsokkanExamples・chunksに flagLevel: "red" を付与（未設定のものだけ）
+async function migrateToFlagLevels(uid) {
+    const sokkanSnap = await getDocs(sokkanColRef(uid));
+    const chunkSnap = await getDocs(chunkColRef(uid));
+
+    const batch = writeBatch(db);
+    let count = 0;
+
+    sokkanSnap.forEach(d => {
+        if (!d.data().flagLevel) {
+            batch.update(doc(db, "users", uid, "sokkanExamples", d.id), { flagLevel: "red" });
+            count++;
+        }
+    });
+
+    chunkSnap.forEach(d => {
+        if (!d.data().flagLevel) {
+            batch.update(doc(db, "users", uid, "chunks", d.id), { flagLevel: "red" });
+            count++;
+        }
+    });
+
+    if (count > 0) await batch.commit();
+}
+
+// 瞬間英作文の旧カテゴリ名 → 新カテゴリ名（ビジネス／カジュアル／どちらでも）
+async function migrateSokkanCategoriesV2(uid) {
+    const snap = await getDocs(sokkanColRef(uid));
+    const batch = writeBatch(db);
+    let count = 0;
+
+    snap.forEach(d => {
+        const oldCat = d.data().category;
+        const newCat = SOKKAN_CATEGORY_MIGRATION[oldCat];
+        if (newCat) {
+            batch.update(doc(db, "users", uid, "sokkanExamples", d.id), { category: newCat });
+            count++;
+        }
+    });
+
+    if (count > 0) await batch.commit();
 }
 
 export async function saveWhyStatement(text) {
@@ -212,6 +308,7 @@ export async function getNextSokkanNumber() {
 }
 
 // 例文を1件追加（通しナンバーは自動採番：現状の最大+1）
+// 新規登録時のフラグレベルは "red" がデフォルト
 export async function addSokkanExample(data) {
     const uid = getUid();
     if (!uid) throw new Error("未ログイン");
@@ -221,7 +318,7 @@ export async function addSokkanExample(data) {
         en: data.en || "",
         pronunciation: data.pronunciation || "",
         category: data.category || "",
-        flag: !!data.flag,
+        flagLevel: normalizeFlagLevel(data.flagLevel || "red"),
         number,
         practiceCount: 0,
         lastPracticedAt: null,
@@ -240,9 +337,9 @@ export async function updateSokkanExample(id, patch) {
     await updateDoc(ref, patch);
 }
 
-// フラグON/OFFトグル
-export async function toggleSokkanFlag(id, flag) {
-    return updateSokkanExample(id, { flag: !!flag });
+// フラグレベルを設定（red / yellow / blue）
+export async function setSokkanFlagLevel(id, level) {
+    return updateSokkanExample(id, { flagLevel: normalizeFlagLevel(level) });
 }
 
 // 練習回数を1増やし、lastPracticedAtを更新
@@ -287,7 +384,7 @@ async function seedSokkanExamples(uid) {
             en: s.en,
             pronunciation: s.pronunciation,
             category: "",
-            flag: false,
+            flagLevel: "red",
             number: s.seedNumber,
             practiceCount: 0,
             lastPracticedAt: null,
@@ -432,7 +529,7 @@ export async function addChunk(data) {
         example: data.example || "",
         source: data.source || "",
         scene: data.scene || "",
-        flag: !!data.flag,
+        flagLevel: normalizeFlagLevel(data.flagLevel || "red"),
         number,
         practiceCount: 0,
         lastPracticedAt: null,
@@ -449,8 +546,9 @@ export async function updateChunk(id, patch) {
     await updateDoc(ref, patch);
 }
 
-export async function toggleChunkFlag(id, flag) {
-    return updateChunk(id, { flag: !!flag });
+// フラグレベルを設定（red / yellow / blue）
+export async function setChunkFlagLevel(id, level) {
+    return updateChunk(id, { flagLevel: normalizeFlagLevel(level) });
 }
 
 export async function recordChunkPractice(id) {
