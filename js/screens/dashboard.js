@@ -15,7 +15,7 @@ let initialized = false;
 let chartInstance = null;
 
 const METHODS = [
-    { key: "shadowing", label: "シャドーイング" },
+    { key: "shadowing", label: "リプロダクション" },
     { key: "listening", label: "多聴" },
     { key: "sokkanEisakubun", label: "瞬間英作文" },
     { key: "soloTalk", label: "独り言" },

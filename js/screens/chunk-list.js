@@ -88,6 +88,7 @@ function render() {
     const practiceBtn = document.getElementById("btn-start-chunk-practice-normal");
 
     countEl.textContent = `${filtered.length} / ${allChunks.length}件`;
+    updateTabCounts();
 
     if (currentFilter.startsWith("flag-")) {
         const color = currentFilter.slice(5);
@@ -165,6 +166,29 @@ function render() {
                 showToast("保存に失敗しました", "error");
             }
         });
+    });
+}
+
+function countForFilter(filterKey) {
+    if (filterKey === "all") return allChunks.length;
+    if (filterKey.startsWith("flag-")) {
+        const color = filterKey.slice(5);
+        return allChunks.filter(c => normalizeFlagLevel(c.flagLevel) === color).length;
+    }
+    return 0;
+}
+
+function updateTabCounts() {
+    document.querySelectorAll("#chunk-filter-tabs .filter-tab").forEach(tab => {
+        const filterKey = tab.dataset.filter;
+        const count = countForFilter(filterKey);
+        let badge = tab.querySelector(".tab-count");
+        if (!badge) {
+            badge = document.createElement("span");
+            badge.className = "tab-count";
+            tab.appendChild(badge);
+        }
+        badge.textContent = count;
     });
 }
 

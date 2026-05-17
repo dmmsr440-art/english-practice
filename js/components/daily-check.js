@@ -7,7 +7,7 @@ import { getDailyCheck, toggleDailyCheck, getTodayDateKey, addDaysKey } from "..
 import { showToast } from "../lib/ui.js";
 
 const CHECK_ITEMS = [
-    { field: "shadowing", label: "🎧 シャドーイング" },
+    { field: "shadowing", label: "🎧 リプロダクション" },
     { field: "listening", label: "📻 多聴" },
     { field: "sokkanEisakubun", label: "📝 瞬間英作文" },
     { field: "soloTalk", label: "🎤 独り言" },

@@ -104,7 +104,7 @@
                     </button>
                     <button class="module-card" data-module="shadowing">
                         <span class="module-icon">🎧</span>
-                        <span class="module-name">シャドーイング</span>
+                        <span class="module-name">リプロダクション</span>
                     </button>
                     <button class="module-card" data-module="listening">
                         <span class="module-icon">📻</span>
@@ -639,6 +639,25 @@
                     ></textarea>
                 </div>
 
+                <div class="edit-field-head">
+                    <label class="edit-label">例文（任意）</label>
+                    <button id="btn-ai-example-chunk-quick" class="btn-ai" type="button">🤖 AI生成</button>
+                </div>
+                <textarea
+                    id="input-chunk-quick-example"
+                    class="settings-textarea"
+                    rows="2"
+                    placeholder="例：Let me check with my team and get back to you by Friday."
+                ></textarea>
+
+                <label class="edit-label">出典（任意）</label>
+                <input
+                    type="text"
+                    id="input-chunk-quick-source"
+                    class="sokkan-search-input"
+                    placeholder="例：会議 / Cambly / リプロダクション"
+                />
+
                 <button id="btn-save-chunk-quick" class="btn-primary btn-block">
                     ＋ 追加する
                 </button>
@@ -700,7 +719,7 @@
                     type="text"
                     id="input-chunk-source"
                     class="sokkan-search-input"
-                    placeholder="例：会議 / Cambly / シャドーイング"
+                    placeholder="例：会議 / Cambly / リプロダクション"
                 />
 
                 <label class="edit-label">使いたい場面</label>
@@ -776,7 +795,7 @@
     <div id="screen-shadowing-log" class="screen">
         <header class="header">
             <button id="btn-back-from-shadowing-log" class="header-btn" aria-label="戻る">←</button>
-            <h1 class="header-title">🎧 シャドーイングログ</h1>
+            <h1 class="header-title">🎧 リプロダクションログ</h1>
             <div class="header-spacer"></div>
         </header>
 
