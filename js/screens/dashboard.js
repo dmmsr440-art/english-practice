@@ -20,7 +20,7 @@ const METHODS = [
     { key: "sokkanEisakubun", label: "瞬間英作文" },
     { key: "soloTalk", label: "独り言" },
     { key: "chunk", label: "チャンク学習" },
-    { key: "cambly", label: "Cambly" }
+    { key: "cambly", label: "英会話" }
 ];
 
 export function initDashboardScreen() {
@@ -167,7 +167,7 @@ function renderMilestone(allChecks, sokkanTotal, chunkTotal) {
 
     const items = [
         { label: "学習日数", current: studyDays, target: milestone.targets.studyDays, unit: "日" },
-        { label: "Cambly累計", current: camblyCount, target: milestone.targets.camblyCount, unit: "回" },
+        { label: "英会話累計", current: camblyCount, target: milestone.targets.camblyCount, unit: "回" },
         { label: "瞬間英作文", current: sokkanTotal, target: milestone.targets.sokkanCount, unit: "件" },
         { label: "チャンク登録", current: chunkTotal, target: milestone.targets.chunkCount, unit: "件" }
     ];
