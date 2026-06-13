@@ -90,9 +90,10 @@ function render() {
     const numLabel = typeof cur?.number === "number"
         ? `#${String(cur.number).padStart(3, "0")}`
         : "";
-    progress.innerHTML = numLabel
+    const countBadge = `<span class="practice-count-badge">練習 ${cur.practiceCount || 0}回</span>`;
+    progress.innerHTML = (numLabel
         ? `<span class="practice-num">${numLabel}</span> ・ ${idx + 1} / ${queue.length}問目`
-        : `${idx + 1} / ${queue.length}問目`;
+        : `${idx + 1} / ${queue.length}問目`) + ` ・ ${countBadge}`;
     document.getElementById("practice-jp").textContent = cur.ja;
     document.getElementById("practice-en").textContent = cur.en || "（英訳未登録）";
     // 発音ポイントはHTMLを含むのでinnerHTML

@@ -95,9 +95,10 @@ function render() {
     const numLabel = typeof cur?.number === "number"
         ? `#${String(cur.number).padStart(3, "0")}`
         : "";
-    progress.innerHTML = numLabel
+    const countBadge = `<span class="practice-count-badge">練習 ${cur.practiceCount || 0}回</span>`;
+    progress.innerHTML = (numLabel
         ? `<span class="practice-num">${numLabel}</span> ・ ${idx + 1} / ${queue.length}枚目`
-        : `${idx + 1} / ${queue.length}枚目`;
+        : `${idx + 1} / ${queue.length}枚目`) + ` ・ ${countBadge}`;
 
     document.getElementById("flashcard-chunk").textContent = cur.chunk || "";
     document.getElementById("flashcard-meaning").textContent = cur.meaning || "（意味未登録）";
