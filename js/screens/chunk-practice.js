@@ -21,10 +21,9 @@ let recordedIds = new Set();
 export function initChunkPracticeScreen() {
     if (initialized) return;
 
-    document.getElementById("btn-back-from-chunk-practice").addEventListener("click", async () => {
-        stopSpeaking();
-        showScreen("screen-chunk-list");
-        await refreshChunkList();
+    document.getElementById("btn-back-from-chunk-practice").addEventListener("click", () => {
+        if (!confirm("練習を終了して一覧に戻りますか？")) return;
+        exitPractice();
     });
 
     document.getElementById("flashcard").addEventListener("click", toggleFlip);
@@ -157,12 +156,19 @@ function next() {
     stopSpeaking();
     if (idx === queue.length - 1) {
         showToast(`お疲れさまでした（${queue.length}枚）`, "success", 3000);
-        document.getElementById("btn-back-from-chunk-practice").click();
+        // 最後まで終えたので確認なしで戻る
+        exitPractice();
         return;
     }
     idx += 1;
     flipped = false;
     render();
+}
+
+async function exitPractice() {
+    stopSpeaking();
+    showScreen("screen-chunk-list");
+    await refreshChunkList();
 }
 
 function prev() {

@@ -11,8 +11,6 @@ import { getStudyStats, getTodayDateKey } from "../lib/storage.js";
 import { openSokkanList } from "./sokkan-list.js";
 import { openChunkList } from "./chunk-list.js";
 import { openDashboard } from "./dashboard.js";
-import { openShadowingLog } from "./shadowing-log.js";
-import { openListeningLog } from "./listening-log.js";
 
 let profileCache = null;
 let homeInitialized = false;
@@ -124,14 +122,6 @@ function handleModuleClick(moduleName) {
     }
     if (moduleName === "dashboard") {
         openDashboard();
-        return;
-    }
-    if (moduleName === "shadowing") {
-        openShadowingLog();
-        return;
-    }
-    if (moduleName === "listening") {
-        openListeningLog();
         return;
     }
 }

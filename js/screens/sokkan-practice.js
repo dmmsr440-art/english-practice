@@ -22,10 +22,9 @@ let recordedIds = new Set(); // 同セッションで重複加算しない
 export function initSokkanPracticeScreen() {
     if (practiceInitialized) return;
 
-    document.getElementById("btn-back-from-practice").addEventListener("click", async () => {
-        stopSpeaking();
-        showScreen("screen-sokkan-list");
-        await refreshSokkanList();
+    document.getElementById("btn-back-from-practice").addEventListener("click", () => {
+        if (!confirm("練習を終了して一覧に戻りますか？")) return;
+        exitPractice();
     });
 
     document.getElementById("btn-reveal-answer").addEventListener("click", revealAnswer);
@@ -149,13 +148,19 @@ function next() {
     stopSpeaking();
     if (idx === queue.length - 1) {
         showToast(`お疲れさまでした（${queue.length}問）`, "success", 3000);
-        // 一覧に戻る
-        document.getElementById("btn-back-from-practice").click();
+        // 最後まで終えたので確認なしで戻る
+        exitPractice();
         return;
     }
     idx += 1;
     revealed = false;
     render();
+}
+
+async function exitPractice() {
+    stopSpeaking();
+    showScreen("screen-sokkan-list");
+    await refreshSokkanList();
 }
 
 function prev() {

@@ -4,7 +4,7 @@
 import { addSokkanExample } from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
 import { refreshSokkanList } from "./sokkan-list.js";
-import { generateTranslation, generatePronunciationPoints, hasGeminiApiKey } from "../lib/gemini.js";
+import { generateTranslation, generateJapaneseFromEnglish, generatePronunciationPoints, hasGeminiApiKey } from "../lib/gemini.js";
 
 let initialized = false;
 
@@ -16,6 +16,7 @@ export function initSokkanQuickAddScreen() {
     });
 
     document.getElementById("btn-save-quick").addEventListener("click", handleSave);
+    document.getElementById("btn-ai-ja-quick").addEventListener("click", handleAIJapanese);
     document.getElementById("btn-ai-translate-quick").addEventListener("click", handleAITranslate);
     document.getElementById("btn-ai-pronunciation-quick").addEventListener("click", handleAIPronunciation);
 
@@ -30,6 +31,33 @@ export function openSokkanQuickAdd() {
     document.getElementById("quick-add-note").textContent = "";
     showScreen("screen-sokkan-quick-add");
     setTimeout(() => document.getElementById("input-quick-ja").focus(), 100);
+}
+
+async function handleAIJapanese() {
+    if (!hasGeminiApiKey()) {
+        showToast("設定画面でGemini APIキーを登録してください", "error", 3500);
+        return;
+    }
+    const en = document.getElementById("input-quick-en").value.trim();
+    if (!en) {
+        showToast("先に英語を入力してください", "error");
+        document.getElementById("input-quick-en").focus();
+        return;
+    }
+    const btn = document.getElementById("btn-ai-ja-quick");
+    btn.disabled = true;
+    btn.textContent = "生成中…";
+    try {
+        const ja = await generateJapaneseFromEnglish(en);
+        document.getElementById("input-quick-ja").value = ja;
+        showToast("和訳を生成しました", "success");
+    } catch (err) {
+        console.error(err);
+        showToast(err.message || "AI生成に失敗しました", "error", 4000);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "🤖 英語から和訳";
+    }
 }
 
 async function handleAITranslate() {

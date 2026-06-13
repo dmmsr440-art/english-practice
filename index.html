@@ -102,14 +102,6 @@
                         <span class="module-icon">🧩</span>
                         <span class="module-name">チャンク学習</span>
                     </button>
-                    <button class="module-card" data-module="shadowing">
-                        <span class="module-icon">🎧</span>
-                        <span class="module-name">リプロダクション</span>
-                    </button>
-                    <button class="module-card" data-module="listening">
-                        <span class="module-icon">📻</span>
-                        <span class="module-name">多聴</span>
-                    </button>
                     <button class="module-card module-card-wide" data-module="dashboard">
                         <span class="module-icon">📈</span>
                         <span class="module-name">進捗ダッシュボード</span>
@@ -314,9 +306,12 @@
         <main class="main-content">
             <section class="quick-add-section">
                 <p class="quick-add-hint">
-                    詰まった日本語を即メモ。英訳はAI生成または後で追加できます。
+                    日本語・英語どちらから入力してもOK。空欄はAIで補完できます。
                 </p>
-                <label class="edit-label">日本語 <span class="edit-required">*</span></label>
+                <div class="edit-field-head">
+                    <label class="edit-label">日本語 <span class="edit-required">*</span></label>
+                    <button id="btn-ai-ja-quick" class="btn-ai" type="button">🤖 英語から和訳</button>
+                </div>
                 <textarea
                     id="input-quick-ja"
                     class="settings-textarea"

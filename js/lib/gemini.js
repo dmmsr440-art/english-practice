@@ -92,6 +92,20 @@ export async function generateTranslation(ja) {
     return callGemini(TRANSLATION_SYSTEM, ja.trim(), { temperature: 0.4 });
 }
 
+// ---- 和訳プロンプト（英 → 日）----
+const JA_FROM_EN_SYSTEM = `あなたは英語学習者向けの和訳アシスタントです。
+与えられた英語表現を、瞬間英作文の問題文として使える自然な日本語に訳してください。
+
+ルール:
+- ネイティブの英語が伝えたい意味を、自然な日本語にする（不自然な直訳を避ける）
+- ビジネス・会議・日常で使う、こなれた日本語表現
+- 出力は日本語のみ。前置き・説明・英語・引用符は一切不要。`;
+
+export async function generateJapaneseFromEnglish(en) {
+    if (!en?.trim()) throw new Error("英語が空です");
+    return callGemini(JA_FROM_EN_SYSTEM, en.trim(), { temperature: 0.4 });
+}
+
 export async function generatePronunciationPoints(en, ja = "") {
     if (!en?.trim()) throw new Error("英文が空です");
     const prompt = ja

@@ -12,7 +12,7 @@ const CHECK_ITEMS = [
     { field: "sokkanEisakubun", label: "📝 瞬間英作文" },
     { field: "soloTalk", label: "🎤 独り言" },
     { field: "chunk", label: "🧩 チャンク学習" },
-    { field: "cambly", label: "🗣️ Cambly" }
+    { field: "cambly", label: "🗣️ 英会話" }
 ];
 
 const MAX_BACK_DAYS = 3;
