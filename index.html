@@ -102,6 +102,10 @@
                         <span class="module-icon">🧩</span>
                         <span class="module-name">チャンク学習</span>
                     </button>
+                    <button class="module-card module-card-wide" data-module="structure">
+                        <span class="module-icon">🗂</span>
+                        <span class="module-name">構文・パラフレ</span>
+                    </button>
                     <button class="module-card module-card-wide" data-module="dashboard">
                         <span class="module-icon">📈</span>
                         <span class="module-name">進捗ダッシュボード</span>
@@ -731,6 +735,234 @@
                     </button>
                     <button id="btn-delete-chunk-edit" class="btn-danger btn-block">
                         🗑 このチャンクを削除
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ========== 構文・パラフレ・一覧 ========== -->
+    <div id="screen-structure-list" class="screen">
+        <header class="header">
+            <button id="btn-back-from-structure-list" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">🗂 構文・パラフレ</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content">
+            <section class="sokkan-practice-launch">
+                <button id="btn-start-structure-practice" class="btn-primary btn-block">
+                    ▶︎ 型の反復練習
+                </button>
+                <button id="btn-start-structure-para" class="btn-secondary btn-block structure-para-launch">
+                    🤖 AIパラフレ練習
+                </button>
+            </section>
+
+            <section class="sokkan-filters">
+                <input
+                    type="text"
+                    id="structure-search"
+                    class="sokkan-search-input"
+                    placeholder="🔍 型・意味・例文で検索"
+                />
+                <div id="structure-filter-tabs" class="sokkan-filter-tabs">
+                    <button class="filter-tab active" data-filter="all">全て</button>
+                    <button class="filter-tab" data-filter="flag-red">🔴 赤</button>
+                    <button class="filter-tab" data-filter="flag-yellow">🟡 黄</button>
+                    <button class="filter-tab" data-filter="flag-blue">🔵 青</button>
+                    <button class="filter-tab" data-filter="cat-beginner">初級</button>
+                    <button class="filter-tab" data-filter="cat-advanced">中上級</button>
+                    <button class="filter-tab" data-filter="cat-expr1">表現①</button>
+                    <button class="filter-tab" data-filter="cat-expr2">表現②</button>
+                    <button class="filter-tab" data-filter="cat-expr3">表現③</button>
+                </div>
+            </section>
+
+            <section class="sokkan-list-section">
+                <p class="sokkan-count" id="structure-count"></p>
+                <ul id="structure-list" class="sokkan-list"></ul>
+                <p id="structure-empty" class="sokkan-empty" hidden>
+                    該当する構文がありません。
+                </p>
+            </section>
+        </main>
+    </div>
+
+    <!-- ========== 構文・パラフレ・型の反復練習 ========== -->
+    <div id="screen-structure-practice" class="screen">
+        <header class="header">
+            <button id="btn-back-from-structure-practice" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title" id="structure-practice-title">型の反復</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content practice-main">
+            <div class="practice-progress" id="structure-practice-progress"></div>
+
+            <section class="structure-pattern-card">
+                <div class="structure-pattern-head">
+                    <span class="structure-pattern-label">型</span>
+                    <span class="structure-cat-badge" id="structure-practice-cat"></span>
+                </div>
+                <p class="structure-pattern" id="structure-practice-pattern"></p>
+                <p class="structure-meaning" id="structure-practice-meaning"></p>
+                <p class="structure-note" id="structure-practice-note" hidden></p>
+            </section>
+
+            <section class="practice-card">
+                <div class="practice-jp-label">日本語</div>
+                <p class="practice-jp" id="structure-practice-ja"></p>
+
+                <button id="btn-structure-reveal" class="btn-primary btn-block">
+                    回答を見る
+                </button>
+
+                <div id="structure-practice-reveal" hidden>
+                    <div class="practice-en-label">英訳</div>
+                    <p class="practice-en" id="structure-practice-en"></p>
+
+                    <button id="btn-structure-speak" class="btn-secondary btn-block">
+                        🔊 音声再生
+                    </button>
+
+                    <button id="btn-structure-toggle-flag" class="btn-flag">
+                        <span id="structure-flag-icon">🏳️</span>
+                        <span id="structure-flag-text">フラグを付ける</span>
+                    </button>
+                </div>
+            </section>
+
+            <button id="btn-structure-to-para" class="btn-text btn-block">
+                🤖 この構文でAIパラフレをやる
+            </button>
+
+            <div class="practice-footer">
+                <button id="btn-structure-prev" class="btn-secondary">← 前へ</button>
+                <button id="btn-structure-next" class="btn-primary">次へ →</button>
+            </div>
+
+            <p id="structure-practice-empty" class="practice-empty" hidden>
+                該当する構文がありません。
+            </p>
+        </main>
+    </div>
+
+    <!-- ========== 構文・パラフレ・AIパラフレ練習 ========== -->
+    <div id="screen-structure-para" class="screen">
+        <header class="header">
+            <button id="btn-back-from-structure-para" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">🤖 AIパラフレ</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content practice-main">
+            <div class="practice-progress" id="structure-para-progress"></div>
+
+            <section class="structure-pattern-card">
+                <div class="structure-pattern-head">
+                    <span class="structure-pattern-label">この型を使って書く</span>
+                    <span class="structure-cat-badge" id="structure-para-cat"></span>
+                </div>
+                <p class="structure-pattern" id="structure-para-pattern"></p>
+                <p class="structure-meaning" id="structure-para-meaning"></p>
+            </section>
+
+            <p id="structure-para-loading" class="structure-para-loading" hidden>
+                🤖 AIが問題を作成中…
+            </p>
+
+            <section class="practice-card" id="structure-para-card">
+                <div class="practice-jp-label">日本語</div>
+                <p class="practice-jp" id="structure-para-ja"></p>
+
+                <label class="edit-label">あなたの英作文（任意・書くと定着します）</label>
+                <textarea
+                    id="input-structure-para-answer"
+                    class="settings-textarea"
+                    rows="3"
+                    placeholder="英語で書いてみる"
+                ></textarea>
+
+                <button id="btn-structure-para-reveal" class="btn-primary btn-block">
+                    答え合わせ
+                </button>
+
+                <div id="structure-para-reveal" hidden>
+                    <div class="practice-en-label">AIの英文</div>
+                    <p class="practice-en" id="structure-para-en"></p>
+
+                    <button id="btn-structure-para-speak" class="btn-secondary btn-block">
+                        🔊 音声再生
+                    </button>
+
+                    <button id="btn-structure-para-flag" class="btn-flag">
+                        <span id="structure-para-flag-icon">🏳️</span>
+                        <span id="structure-para-flag-text">フラグを付ける</span>
+                    </button>
+                </div>
+            </section>
+
+            <p id="structure-para-empty" class="practice-empty" hidden></p>
+
+            <div class="practice-footer">
+                <button id="btn-structure-para-regen" class="btn-secondary">🔄 作り直す</button>
+                <button id="btn-structure-para-next" class="btn-primary">次の問題 →</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========== 構文・パラフレ・編集 ========== -->
+    <div id="screen-structure-edit" class="screen">
+        <header class="header">
+            <button id="btn-back-from-structure-edit" class="header-btn" aria-label="戻る">←</button>
+            <h1 class="header-title">構文を編集</h1>
+            <div class="header-spacer"></div>
+        </header>
+
+        <main class="main-content">
+            <section class="edit-section">
+                <div class="edit-number-row">
+                    <span class="settings-label">通しナンバー</span>
+                    <span class="settings-value" id="structure-edit-number">-</span>
+                </div>
+
+                <label class="edit-label">型 <span class="edit-required">*</span></label>
+                <textarea
+                    id="input-structure-pattern"
+                    class="settings-textarea"
+                    rows="2"
+                    placeholder="例：It's [形容詞] to do"
+                ></textarea>
+
+                <label class="edit-label">意味</label>
+                <textarea
+                    id="input-structure-meaning"
+                    class="settings-textarea"
+                    rows="2"
+                    placeholder="例：〜するのは形容詞だ"
+                ></textarea>
+
+                <label class="edit-label">解説（任意）</label>
+                <textarea
+                    id="input-structure-note"
+                    class="settings-textarea"
+                    rows="3"
+                    placeholder="使いどころのメモ"
+                ></textarea>
+
+                <div class="edit-field-head">
+                    <label class="edit-label">例文</label>
+                    <button id="btn-add-structure-example" class="btn-ai" type="button">＋ 例文を追加</button>
+                </div>
+                <div id="structure-example-editors" class="structure-example-editors"></div>
+
+                <div class="edit-footer">
+                    <button id="btn-save-structure-edit" class="btn-primary btn-block">
+                        保存する
+                    </button>
+                    <button id="btn-delete-structure-edit" class="btn-danger btn-block">
+                        🗑 この構文を削除
                     </button>
                 </div>
             </section>

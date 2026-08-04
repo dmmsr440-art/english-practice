@@ -59,7 +59,7 @@ const PRONUNCIATION_SYSTEM = `あなたは日本人学習者向けの英語発�
 入力: "What time works for you?"
 出力: • <b>双子の法則</b>: "What time" → T+T連続で前のTが消える → 「<u>ワタイム</u>」<br>• <b>子から母+Y</b>: "for you" → R+Y連結 → 「<u>フォーユ</u>」`;
 
-async function callGemini(systemInstruction, userText, { temperature = 0.4 } = {}) {
+async function callGemini(systemInstruction, userText, { temperature = 0.4, responseMimeType = "text/plain" } = {}) {
     if (!cachedApiKey) {
         throw new Error("Gemini APIキーが未設定です。設定画面から登録してください。");
     }
@@ -69,7 +69,7 @@ async function callGemini(systemInstruction, userText, { temperature = 0.4 } = {
         contents: [{ role: "user", parts: [{ text: userText }] }],
         generationConfig: {
             temperature,
-            responseMimeType: "text/plain"
+            responseMimeType
         }
     };
     const resp = await fetch(url, {
@@ -192,6 +192,65 @@ export async function generateChunkExample(chunk, meaning = "") {
         ? `チャンク: ${chunk.trim()}\n（参考：意味は「${meaning.trim()}」）`
         : `チャンク: ${chunk.trim()}`;
     return callGemini(CHUNK_EXAMPLE_SYSTEM, prompt, { temperature: 0.5 });
+}
+
+// ---- 構文パラフレ：構文を使った新しい英文＋和訳を生成 ----
+const PARAPHRASE_SYSTEM = `あなたはATSU式「パラフレ」練習の問題作成者です。
+与えられた英語の構文（型）を必ず使った新しい英文と、その自然な日本語訳を作ります。
+
+ルール:
+- 指定された型を必ず使う（時制・人称・語形の変化はOK。型そのものを崩さない）
+- 参考例文とは違う、新しい場面・内容にする（言い回しの丸写し禁止）
+- 日常会話・ビジネス会議で実際に使う自然な英語。1文で、長すぎないこと
+- 日本語訳は、それだけを見て英作文できる自然な和訳にする（不自然な直訳は避ける）
+- 出力は次の形式のJSON配列のみ。前置き・説明・コードブロックは一切不要:
+[{"en": "英文", "ja": "日本語訳"}]`;
+
+// Geminiの返答からJSON配列を取り出す（コードブロック付きでも耐えるように）
+function parseParaphraseJson(text) {
+    let raw = String(text || "").trim();
+    raw = raw.replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim();
+    const start = raw.indexOf("[");
+    const end = raw.lastIndexOf("]");
+    if (start >= 0 && end > start) raw = raw.slice(start, end + 1);
+
+    let parsed;
+    try {
+        parsed = JSON.parse(raw);
+    } catch (err) {
+        throw new Error("AIの返答を解析できませんでした。もう一度お試しください。");
+    }
+    if (!Array.isArray(parsed)) throw new Error("AIの返答が想定の形式ではありませんでした");
+
+    const items = parsed
+        .map(item => ({
+            en: String(item?.en || "").trim(),
+            ja: String(item?.ja || "").trim()
+        }))
+        .filter(item => item.en && item.ja);
+
+    if (items.length === 0) throw new Error("AIから問題を生成できませんでした");
+    return items;
+}
+
+export async function generateParaphraseSet({ pattern, meaning = "", examples = [], count = 3 }) {
+    if (!pattern?.trim()) throw new Error("構文が空です");
+    const refs = examples
+        .slice(0, 3)
+        .map(e => `- ${e.en}`)
+        .join("\n");
+    const prompt = [
+        `型: ${pattern.trim()}`,
+        meaning ? `意味: ${meaning.trim()}` : "",
+        refs ? `参考例文（これとは違う内容にする）:\n${refs}` : "",
+        `この型を使った英文を${count}問、JSON配列で作ってください。`
+    ].filter(Boolean).join("\n");
+
+    const text = await callGemini(PARAPHRASE_SYSTEM, prompt, {
+        temperature: 1.0,
+        responseMimeType: "application/json"
+    });
+    return parseParaphraseJson(text).slice(0, count);
 }
 
 // APIキーの簡易疎通チェック（任意）

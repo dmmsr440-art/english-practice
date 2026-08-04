@@ -11,6 +11,7 @@ import {
     serverTimestamp
 } from "./firebase.js";
 import { SEED_SOKKAN } from "../data/seed-sokkan.js";
+import { STRUCTURES } from "../data/seed-structures.js";
 
 // 現在のユーザーIDを取得（未ログインならnull）
 export function getUid() {
@@ -107,6 +108,17 @@ export async function ensureProfile(user) {
             profile.flagLevelsMigrated = true;
         } catch (err) {
             console.warn("フラグレベル移行失敗（次回再試行）:", err);
+        }
+    }
+
+    // 構文・パラフレの初回シード投入（ATSU 120選）
+    if (!profile.structuresSeeded) {
+        try {
+            await seedStructures(uid);
+            await updateDoc(ref, { structuresSeeded: true });
+            profile.structuresSeeded = true;
+        } catch (err) {
+            console.warn("構文シード失敗（次回再試行）:", err);
         }
     }
 
@@ -566,6 +578,106 @@ export async function deleteChunk(id) {
     if (!uid) throw new Error("未ログイン");
     const ref = doc(db, "users", uid, "chunks", id);
     await deleteDoc(ref);
+}
+
+// --- 構文・パラフレ（structures）操作 ---
+// ATSU「表現・構文厳選120選」を初回ログイン時にシード投入し、以後はユーザーの所有データとして扱う。
+// number(1〜120)を同一性のキーにするので、削除した構文が再シードで復活することはない。
+
+export const STRUCTURE_CATEGORIES = ["beginner", "advanced", "expr1", "expr2", "expr3"];
+
+export const STRUCTURE_CATEGORY_LABELS = {
+    beginner: "初級",
+    advanced: "中上級",
+    expr1: "表現①",
+    expr2: "表現②",
+    expr3: "表現③"
+};
+
+function structureColRef(uid) {
+    return collection(db, "users", uid, "structures");
+}
+
+// 全構文取得（通しナンバー昇順＝ATSUの並び順）
+export async function listStructures() {
+    const uid = getUid();
+    if (!uid) return [];
+    const snap = await getDocs(structureColRef(uid));
+    const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    rows.sort((a, b) => {
+        const na = typeof a.number === "number" ? a.number : Infinity;
+        const nb = typeof b.number === "number" ? b.number : Infinity;
+        return na - nb;
+    });
+    return rows;
+}
+
+export async function updateStructure(id, patch) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    await updateDoc(doc(db, "users", uid, "structures", id), patch);
+}
+
+export async function setStructureFlagLevel(id, level) {
+    return updateStructure(id, { flagLevel: normalizeFlagLevel(level) });
+}
+
+export async function recordStructurePractice(id) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    await updateDoc(doc(db, "users", uid, "structures", id), {
+        practiceCount: increment(1),
+        lastPracticedAt: serverTimestamp()
+    });
+}
+
+export async function deleteStructure(id) {
+    const uid = getUid();
+    if (!uid) throw new Error("未ログイン");
+    await deleteDoc(doc(db, "users", uid, "structures", id));
+}
+
+export async function countStructures() {
+    const uid = getUid();
+    if (!uid) return 0;
+    const snap = await getDocs(structureColRef(uid));
+    return snap.size;
+}
+
+// 初回シード：まだFirestoreに無い number の分だけを投入（冪等）
+async function seedStructures(uid) {
+    const existing = await getDocs(structureColRef(uid));
+    const existingNumbers = new Set();
+    existing.forEach(d => {
+        const n = d.data().number;
+        if (typeof n === "number") existingNumbers.add(n);
+    });
+
+    const toSeed = STRUCTURES.filter(s => !existingNumbers.has(s.number));
+    if (toSeed.length === 0) return;
+
+    // writeBatchの上限500件に配慮してチャンク分割
+    const CHUNK = 300;
+    for (let i = 0; i < toSeed.length; i += CHUNK) {
+        const batch = writeBatch(db);
+        toSeed.slice(i, i + CHUNK).forEach(s => {
+            const ref = doc(structureColRef(uid));
+            batch.set(ref, {
+                number: s.number,
+                category: s.category,
+                subtag: s.subtag || "",
+                pattern: s.pattern,
+                meaning: s.meaning,
+                note: s.note || "",
+                examples: (s.examples || []).map(e => ({ en: e.en, ja: e.ja })),
+                flagLevel: "red",
+                practiceCount: 0,
+                lastPracticedAt: null,
+                createdAt: serverTimestamp()
+            });
+        });
+        await batch.commit();
+    }
 }
 
 // --- ログ系（シャドーイング・多聴） ---

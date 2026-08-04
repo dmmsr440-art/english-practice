@@ -10,6 +10,7 @@ import { showScreen, showModal, hideModal } from "../lib/ui.js";
 import { getStudyStats, getTodayDateKey } from "../lib/storage.js";
 import { openSokkanList } from "./sokkan-list.js";
 import { openChunkList } from "./chunk-list.js";
+import { openStructureList } from "./structure-list.js";
 import { openDashboard } from "./dashboard.js";
 
 let profileCache = null;
@@ -118,6 +119,10 @@ function handleModuleClick(moduleName) {
     }
     if (moduleName === "chunk") {
         openChunkList();
+        return;
+    }
+    if (moduleName === "structure") {
+        openStructureList();
         return;
     }
     if (moduleName === "dashboard") {
