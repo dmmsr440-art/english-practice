@@ -236,6 +236,7 @@ const DEFAULT_CHECKS = {
     sokkanEisakubun: false,
     soloTalk: false,
     chunk: false,
+    structure: false,
     cambly: false
 };
 
@@ -740,7 +741,7 @@ export const deleteListeningLog = (id) => deleteLogEntry("listeningLogs", id);
 
 // --- 学習ストリーク・空白日数 ---
 
-const STUDY_CHECK_FIELDS = ["shadowing", "listening", "sokkanEisakubun", "soloTalk", "chunk", "cambly"];
+const STUDY_CHECK_FIELDS = ["shadowing", "listening", "sokkanEisakubun", "soloTalk", "chunk", "structure", "cambly"];
 
 // 連続学習日数（streak）と連続空白日数（gap）を返す
 // streak: 今日含む連続学習日数（今日まだ何もしてない場合は0）

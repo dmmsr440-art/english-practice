@@ -7,6 +7,7 @@ import {
     FLAG_ICONS, normalizeFlagLevel, nextFlagLevel
 } from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
+import { fillSortSelect, loadSort, saveSort, sortItems, makeRandomRanks } from "../lib/sort.js";
 import { startChunkPractice } from "./chunk-practice.js";
 import { openChunkQuickAdd } from "./chunk-quick-add.js";
 import { openChunkEdit } from "./chunk-edit.js";
@@ -14,6 +15,8 @@ import { openChunkEdit } from "./chunk-edit.js";
 let allChunks = [];
 let currentFilter = "all"; // "all" | "flag-red" | "flag-yellow" | "flag-blue"
 let currentSearch = "";
+let currentSort = loadSort("chunk", "number-desc");
+let randomRanks = null;
 let listInitialized = false;
 
 export async function openChunkList() {
@@ -35,6 +38,15 @@ export function initChunkListScreen() {
     const searchEl = document.getElementById("chunk-search");
     searchEl.addEventListener("input", () => {
         currentSearch = searchEl.value.trim().toLowerCase();
+        render();
+    });
+
+    const sortEl = document.getElementById("chunk-sort");
+    fillSortSelect(sortEl, currentSort);
+    sortEl.addEventListener("change", () => {
+        currentSort = sortEl.value;
+        saveSort("chunk", currentSort);
+        if (currentSort === "random") randomRanks = makeRandomRanks(allChunks);
         render();
     });
 
@@ -77,11 +89,13 @@ async function reloadAndRender() {
         showToast("読み込みに失敗しました", "error");
         allChunks = [];
     }
+    // ランダム順は一覧を読み込んだときだけシャッフルし直す
+    randomRanks = makeRandomRanks(allChunks);
     render();
 }
 
 function render() {
-    const filtered = applyFilter(allChunks);
+    const filtered = sortItems(applyFilter(allChunks), currentSort, randomRanks);
     const listEl = document.getElementById("chunk-list");
     const emptyEl = document.getElementById("chunk-empty");
     const countEl = document.getElementById("chunk-count");

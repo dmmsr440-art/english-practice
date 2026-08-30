@@ -10,6 +10,7 @@ import {
     FLAG_ICONS, normalizeFlagLevel, nextFlagLevel
 } from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
+import { fillSortSelect, loadSort, saveSort, sortItems, makeRandomRanks } from "../lib/sort.js";
 import { startStructurePractice } from "./structure-practice.js";
 import { startStructurePara } from "./structure-para.js";
 import { openStructureEdit } from "./structure-edit.js";
@@ -17,6 +18,8 @@ import { openStructureEdit } from "./structure-edit.js";
 let allStructures = [];
 let currentFilter = "all"; // "all" | "flag-赤黄青" | "cat-カテゴリ"
 let currentSearch = "";
+let currentSort = loadSort("structure", "number-asc");
+let randomRanks = null;
 let listInitialized = false;
 
 export async function openStructureList() {
@@ -34,6 +37,15 @@ export function initStructureListScreen() {
     const searchEl = document.getElementById("structure-search");
     searchEl.addEventListener("input", () => {
         currentSearch = searchEl.value.trim().toLowerCase();
+        render();
+    });
+
+    const sortEl = document.getElementById("structure-sort");
+    fillSortSelect(sortEl, currentSort);
+    sortEl.addEventListener("change", () => {
+        currentSort = sortEl.value;
+        saveSort("structure", currentSort);
+        if (currentSort === "random") randomRanks = makeRandomRanks(allStructures);
         render();
     });
 
@@ -76,11 +88,13 @@ async function reloadAndRender() {
         showToast("読み込みに失敗しました", "error");
         allStructures = [];
     }
+    // ランダム順は一覧を読み込んだときだけシャッフルし直す
+    randomRanks = makeRandomRanks(allStructures);
     render();
 }
 
 function render() {
-    const filtered = applyFilter(allStructures);
+    const filtered = sortItems(applyFilter(allStructures), currentSort, randomRanks);
     const listEl = document.getElementById("structure-list");
     const emptyEl = document.getElementById("structure-empty");
     const countEl = document.getElementById("structure-count");

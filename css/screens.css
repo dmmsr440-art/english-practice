@@ -1657,3 +1657,34 @@
     color: var(--error);
     padding: 2px 6px;
 }
+
+/* ========== 一覧の並び替え ========== */
+.sort-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.sort-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-3);
+    white-space: nowrap;
+}
+
+.sort-select {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius);
+    font-size: 14px;
+    background: var(--card);
+    color: var(--text);
+}
+
+/* 累計カードが奇数個のとき、最後の1枚は横いっぱいに */
+.totals-grid .total-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+}

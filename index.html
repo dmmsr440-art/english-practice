@@ -86,7 +86,7 @@
                     <div class="progress-bar">
                         <div class="progress-fill" id="progress-fill"></div>
                     </div>
-                    <p class="progress-text" id="progress-text">0 / 6</p>
+                    <p class="progress-text" id="progress-text">0 / 7</p>
                 </div>
             </section>
 
@@ -226,6 +226,10 @@
                     class="sokkan-search-input"
                     placeholder="🔍 日本語・英訳で検索"
                 />
+                <div class="sort-row">
+                    <label class="sort-label" for="sokkan-sort">並び替え</label>
+                    <select id="sokkan-sort" class="sort-select"></select>
+                </div>
                 <div class="sokkan-filter-tabs" id="sokkan-filter-tabs">
                     <button class="filter-tab active" data-filter="all">全て</button>
                     <button class="filter-tab" data-filter="flag-red">🔴 赤</button>
@@ -506,6 +510,10 @@
                         <div class="total-label">チャンク</div>
                         <div class="total-value" id="total-chunks">-</div>
                     </div>
+                    <div class="total-card">
+                        <div class="total-label">構文・パラフレ</div>
+                        <div class="total-value" id="total-structure-days">-</div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -533,6 +541,10 @@
                     class="sokkan-search-input"
                     placeholder="🔍 チャンク・意味で検索"
                 />
+                <div class="sort-row">
+                    <label class="sort-label" for="chunk-sort">並び替え</label>
+                    <select id="chunk-sort" class="sort-select"></select>
+                </div>
                 <div id="chunk-filter-tabs" class="sokkan-filter-tabs">
                     <button class="filter-tab active" data-filter="all">全て</button>
                     <button class="filter-tab" data-filter="flag-red">🔴 赤</button>
@@ -766,6 +778,10 @@
                     class="sokkan-search-input"
                     placeholder="🔍 型・意味・例文で検索"
                 />
+                <div class="sort-row">
+                    <label class="sort-label" for="structure-sort">並び替え</label>
+                    <select id="structure-sort" class="sort-select"></select>
+                </div>
                 <div id="structure-filter-tabs" class="sokkan-filter-tabs">
                     <button class="filter-tab active" data-filter="all">全て</button>
                     <button class="filter-tab" data-filter="flag-red">🔴 赤</button>

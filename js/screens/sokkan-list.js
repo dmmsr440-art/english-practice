@@ -7,6 +7,7 @@ import {
     FLAG_ICONS, normalizeFlagLevel, nextFlagLevel
 } from "../lib/storage.js";
 import { showScreen, showToast } from "../lib/ui.js";
+import { fillSortSelect, loadSort, saveSort, sortItems, makeRandomRanks } from "../lib/sort.js";
 import { startPractice } from "./sokkan-practice.js";
 import { openSokkanQuickAdd } from "./sokkan-quick-add.js";
 import { openSokkanEdit } from "./sokkan-edit.js";
@@ -15,6 +16,8 @@ import { openSokkanImport } from "./sokkan-import.js";
 let allExamples = [];
 let currentFilter = "all"; // "all" | "flag-red" | "flag-yellow" | "flag-blue" | "cat-ビジネス" | "cat-カジュアル" | "cat-どちらでも"
 let currentSearch = "";
+let currentSort = loadSort("sokkan", "number-desc");
+let randomRanks = null;
 let listInitialized = false;
 
 export async function openSokkanList() {
@@ -40,6 +43,15 @@ export function initSokkanListScreen() {
     const searchEl = document.getElementById("sokkan-search");
     searchEl.addEventListener("input", () => {
         currentSearch = searchEl.value.trim().toLowerCase();
+        render();
+    });
+
+    const sortEl = document.getElementById("sokkan-sort");
+    fillSortSelect(sortEl, currentSort);
+    sortEl.addEventListener("change", () => {
+        currentSort = sortEl.value;
+        saveSort("sokkan", currentSort);
+        if (currentSort === "random") randomRanks = makeRandomRanks(allExamples);
         render();
     });
 
@@ -86,11 +98,13 @@ async function reloadAndRender() {
         showToast("読み込みに失敗しました", "error");
         allExamples = [];
     }
+    // ランダム順は一覧を読み込んだときだけシャッフルし直す
+    randomRanks = makeRandomRanks(allExamples);
     render();
 }
 
 function render() {
-    const filtered = applyFilter(allExamples);
+    const filtered = sortItems(applyFilter(allExamples), currentSort, randomRanks);
     const listEl = document.getElementById("sokkan-list");
     const emptyEl = document.getElementById("sokkan-empty");
     const countEl = document.getElementById("sokkan-count");

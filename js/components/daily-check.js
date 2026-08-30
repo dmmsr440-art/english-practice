@@ -12,6 +12,7 @@ const CHECK_ITEMS = [
     { field: "sokkanEisakubun", label: "📝 瞬間英作文" },
     { field: "soloTalk", label: "🎤 独り言" },
     { field: "chunk", label: "🧩 チャンク学習" },
+    { field: "structure", label: "🗂 構文・パラフレ" },
     { field: "cambly", label: "🗣️ 英会話" }
 ];
 

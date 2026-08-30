@@ -20,6 +20,7 @@ const METHODS = [
     { key: "sokkanEisakubun", label: "瞬間英作文" },
     { key: "soloTalk", label: "独り言" },
     { key: "chunk", label: "チャンク学習" },
+    { key: "structure", label: "構文・パラフレ" },
     { key: "cambly", label: "英会話" }
 ];
 
@@ -192,10 +193,12 @@ function renderMilestone(allChecks, sokkanTotal, chunkTotal) {
 function renderTotals(allChecks, sokkanTotal, chunkTotal) {
     const studyDays = allChecks.filter(c => hasAnyCheck(c)).length;
     const camblyCount = allChecks.filter(c => !!c.cambly).length;
+    const structureDays = allChecks.filter(c => !!c.structure).length;
     document.getElementById("total-study-days").textContent = `${studyDays}日`;
     document.getElementById("total-cambly").textContent = `${camblyCount}回`;
     document.getElementById("total-sokkan").textContent = `${sokkanTotal}件`;
     document.getElementById("total-chunks").textContent = `${chunkTotal}件`;
+    document.getElementById("total-structure-days").textContent = `${structureDays}日`;
 }
 
 async function handleSaveNote() {
