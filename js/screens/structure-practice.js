@@ -12,6 +12,7 @@ import { showScreen, showToast } from "../lib/ui.js";
 import { speak, stopSpeaking } from "../lib/tts.js";
 import { refreshStructureList } from "./structure-list.js";
 import { startStructurePara } from "./structure-para.js";
+import { openSokkanQuickAdd } from "./sokkan-quick-add.js";
 
 let initialized = false;
 let queue = [];        // 例文を1つ以上持つ構文の配列
@@ -37,6 +38,7 @@ export function initStructurePracticeScreen() {
     document.getElementById("btn-structure-next").addEventListener("click", next);
     document.getElementById("btn-structure-prev").addEventListener("click", prev);
     document.getElementById("btn-structure-toggle-flag").addEventListener("click", handleFlagToggle);
+    document.getElementById("btn-structure-to-sokkan").addEventListener("click", handleAddToSokkan);
     document.getElementById("btn-structure-to-para").addEventListener("click", () => {
         const cur = queue[sIdx];
         if (!cur) return;
@@ -182,6 +184,24 @@ function revealAnswer() {
     const en = currentExample()?.en;
     if (en) speak(en);
     render();
+}
+
+// いま出ている例文を瞬間英作文へ（クイック入力画面で編集してから保存）
+function handleAddToSokkan() {
+    const cur = queue[sIdx];
+    const ex = currentExample();
+    if (!cur || !ex) return;
+    stopSpeaking();
+    const numLabel = typeof cur.number === "number"
+        ? `#${String(cur.number).padStart(3, "0")} ${cur.pattern}`
+        : cur.pattern;
+    openSokkanQuickAdd({
+        ja: ex.ja || "",
+        en: ex.en || "",
+        sourceLabel: `🗂 ${numLabel}`,
+        autoPronunciation: true,
+        onReturn: () => resumeStructurePractice()
+    });
 }
 
 function next() {

@@ -1688,3 +1688,28 @@
 .totals-grid .total-card:last-child:nth-child(odd) {
     grid-column: 1 / -1;
 }
+
+/* 練習画面 → 瞬間英作文へ登録するボタン */
+.btn-to-sokkan {
+    justify-content: center;
+    color: var(--primary-dark);
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.btn-to-sokkan:hover {
+    background: #dbeafe;
+}
+
+/* クイック入力：引用元の表示 */
+.quick-add-source {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    background: var(--primary-light);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    line-height: 1.5;
+    word-break: break-word;
+}

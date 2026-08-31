@@ -13,6 +13,7 @@ import { speak, stopSpeaking } from "../lib/tts.js";
 import { generateParaphraseSet, hasGeminiApiKey } from "../lib/gemini.js";
 import { refreshStructureList } from "./structure-list.js";
 import { resumeStructurePractice } from "./structure-practice.js";
+import { openSokkanQuickAdd } from "./sokkan-quick-add.js";
 
 const QUESTIONS_PER_STRUCTURE = 3;
 
@@ -45,8 +46,35 @@ export function initStructureParaScreen() {
         loadItemsForCurrent({ force: true });
     });
     document.getElementById("btn-structure-para-flag").addEventListener("click", handleFlagToggle);
+    document.getElementById("btn-structure-para-to-sokkan").addEventListener("click", handleAddToSokkan);
 
     initialized = true;
+}
+
+// AIが作った問題を瞬間英作文へ（クイック入力画面で編集してから保存）
+function handleAddToSokkan() {
+    const cur = pool[pIdx];
+    const item = items[qIdx];
+    if (!cur || !item) return;
+    stopSpeaking();
+    const numLabel = typeof cur.number === "number"
+        ? `#${String(cur.number).padStart(3, "0")} ${cur.pattern}`
+        : cur.pattern;
+    openSokkanQuickAdd({
+        ja: item.ja || "",
+        en: item.en || "",
+        sourceLabel: `🤖 AIパラフレ・🗂 ${numLabel}`,
+        autoPronunciation: true,
+        onReturn: () => resumeStructurePara()
+    });
+}
+
+// パラフレ練習に戻る（瞬間英作文への登録から復帰したときなど。状態はそのまま）
+export function resumeStructurePara() {
+    if (pool.length === 0) return false;
+    showScreen("screen-structure-para");
+    render();
+    return true;
 }
 
 export function startStructurePara({ structures, returnTo: from = "list" }) {

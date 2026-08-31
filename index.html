@@ -316,6 +316,7 @@
                 <p class="quick-add-hint">
                     日本語・英語どちらから入力してもOK。空欄はAIで補完できます。
                 </p>
+                <p class="quick-add-source" id="quick-add-source" hidden></p>
                 <div class="edit-field-head">
                     <label class="edit-label">日本語 <span class="edit-required">*</span></label>
                     <button id="btn-ai-ja-quick" class="btn-ai" type="button">🤖 英語から和訳</button>
@@ -842,6 +843,10 @@
                         🔊 音声再生
                     </button>
 
+                    <button id="btn-structure-to-sokkan" class="btn-secondary btn-block btn-to-sokkan">
+                        📝 この例文を瞬間英作文に登録
+                    </button>
+
                     <button id="btn-structure-toggle-flag" class="btn-flag">
                         <span id="structure-flag-icon">🏳️</span>
                         <span id="structure-flag-text">フラグを付ける</span>
@@ -910,6 +915,10 @@
 
                     <button id="btn-structure-para-speak" class="btn-secondary btn-block">
                         🔊 音声再生
+                    </button>
+
+                    <button id="btn-structure-para-to-sokkan" class="btn-secondary btn-block btn-to-sokkan">
+                        📝 この問題を瞬間英作文に登録
                     </button>
 
                     <button id="btn-structure-para-flag" class="btn-flag">
